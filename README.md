@@ -11,11 +11,11 @@ Design:
   
   
 To do:
- - [ ] general UI
- - [ ] brainrender widget
- - [ ] left sidebar buttons
-      - [ ] add_brain_regions functionality
+ - [x] general UI
+ - [x] brainrender widget
+ - [x] left sidebar buttons
+      - [x] add_brain_regions functionality
       - [ ] add cells from file functionality
-  - [ ] right sidebar
-       - [ ] rendered item list
-       - [ ] visibility toggle functionality
+  - [x] right sidebar
+       - [x] rendered item list
+       - [x] visibility toggle functionality
