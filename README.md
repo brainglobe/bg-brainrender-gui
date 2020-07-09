@@ -11,17 +11,18 @@ Design:
   
   
 To do:
- - [x] general UI
- - [x] brainrender widget
- - [x] left sidebar buttons
-      - [x] add_brain_regions functionality
-      - [x] add cells from file functionality
-  - [x] right sidebar
-       - [x] rendered item list
-       - [x] visibility toggle functionality
-
-  - [ ] split actors list based on type of data (e.g. regions vs from file vs cells)
-  - [ ] actors list: add icon to show what kind of data
-  - [x] actors list: UI to show hidden/shown
-
-  - [ ] add structures tree widget like bgviewer
+ * [x] general UI
+ * [x] brainrender widget
+ * [x] left sidebar buttons
+      * [x] add_brain_regions functionality
+      * [x] add cells from file functionality
+  * [x] right sidebar
+       * [x] rendered item list
+       * [x] visibility toggle functionality
+  * [ ] actors list: add icon to show what kind of data
+  * [x] actors list: UI to show hidden/shown
+  * [x] add structures tree widget like bgviewer
+  * [ ] UI improvements
+  * [ ] double check add cells and add sharptrack
+  * [ ] more add X functionality?
+  * [ ] widget to try different shading styles?
