@@ -22,6 +22,6 @@ To do:
 
   - [ ] split actors list based on type of data (e.g. regions vs from file vs cells)
   - [ ] actors list: add icon to show what kind of data
-  - [ ] actors list: UI to show hidden/shown
+  - [x] actors list: UI to show hidden/shown
 
   - [ ] add structures tree widget like bgviewer

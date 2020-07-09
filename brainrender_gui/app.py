@@ -4,10 +4,17 @@ from brainrender.Utils.camera import set_camera
 from vedo import Plotter, addons
 from collections import namedtuple
 from qtpy.QtWidgets import QFileDialog
+from qtpy.QtGui import QColor
+from PyQt5.Qt import Qt
+
 
 from brainrender_gui.ui import UI
-from brainrender_gui.widgets.actors_list import update_actors_list
+from brainrender_gui.widgets.actors_list import (
+    update_actors_list,
+    remove_from_list,
+)
 from brainrender_gui.widgets.add_regions import Window2
+from brainrender_gui.style import palette
 
 """
     # ! known issues
@@ -46,12 +53,55 @@ class App(Scene, UI):
             self.add_from_file_sharptrack
         )
 
+        # Add callback
+        self.treeView.clicked.connect(self.add_region_from_tree)
+
     # ---------------------------- Add/Update regions ---------------------------- #
     def open_regions_dialog(self):
         self.regions_dialog = Window2(self)
 
     def add_regions(self, regions):
         self.scene.add_brain_regions(regions)
+        self._update()
+
+    def add_region_from_tree(self, val):
+        """
+            When an item on the hierarchy tree is double clicked, the
+            corresponding mesh is added/removed from the brainrender scene
+        """
+        # Get item
+        idxs = self.treeView.selectedIndexes()
+        if idxs:
+            item = idxs[0]
+        else:
+            return
+        item = item.model().itemFromIndex(val)
+
+        # Get region name
+        region = item.tag
+
+        # Toggle checkbox
+        if not item._checked:
+            item.setCheckState(Qt.Checked)
+            item._checked = True
+        else:
+            item.setCheckState(Qt.Unchecked)
+            item._checked = False
+
+        # Add/remove mesh
+        if region not in self.scene.actors["regions"].keys():
+            # Add region
+            self.scene.add_brain_regions(region,)
+        else:
+            # remove regiona and update list
+            del self.scene.actors["regions"][region]
+            del self.actors[region]
+            remove_from_list(self.actors_list, region)
+
+        # Update hierarchy's item font
+        item.toggle_active()
+
+        # Update brainrender scene
         self._update()
 
     # ------------------------------- Add from file ------------------------------ #
@@ -101,6 +151,17 @@ class App(Scene, UI):
         # Toggle visibility
         self.actors[aname] = self.atuple(actor.mesh, not actor.is_visible)
 
+        # Toggle list item UI
+        if self.actors[aname].is_visible:
+            txt = palette["text"]
+        else:
+            txt = palette["primary"]
+        rgb = txt.replace(")", "").replace(" ", "").split("(")[-1].split(",")
+        self.actors_list.item(index.row()).setForeground(
+            QColor(*[int(r) for r in rgb])
+        )
+
+        # uPDATE
         self._update()
 
     # ------------------------------- Initial setup ------------------------------ #

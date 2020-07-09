@@ -6,10 +6,16 @@ from qtpy.QtWidgets import (
     QWidget,
     QListWidget,
     QHBoxLayout,
+    QTreeView,
 )
-from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+from PyQt5.Qt import QStandardItemModel
 
-from brainrender_gui.style import style
+from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+from napari.utils.theme import palettes
+import os
+from pathlib import Path
+from brainrender_gui.style import style, tree_css, update_css
+from brainrender_gui.widgets.tree import StandardItem
 
 
 class UI(QMainWindow):
@@ -22,8 +28,11 @@ class UI(QMainWindow):
         "add sharptrack",
     ]
 
-    def __init__(self):
+    def __init__(self, theme="dark"):
         super().__init__()
+
+        self.palette = palettes[theme]
+        self.theme = theme
 
         # set the title of main window
         self.setWindowTitle("BRAINGLOBE - brainrender GUI")
@@ -33,11 +42,88 @@ class UI(QMainWindow):
         self.height = int(0.618 * self.Width)
         self.resize(self.Width, self.height)
 
+        # Create UI
+        self.get_icons()
         self.initUI()
+        self.setStyleSheet(update_css(style, self.palette))
 
-        self.setStyleSheet(style)
+    def get_icons(self):
+
+        fld = Path(os.path.dirname(os.path.realpath(__file__)))
+        self.palette["branch_closed_img"] = str(
+            fld / "icons" / f"right_{self.theme}.svg"
+        ).replace("\\", "/")
+
+        self.palette["branch_opened_img"] = str(
+            fld / "icons" / f"down_{self.theme}.svg"
+        ).replace("\\", "/")
+
+        self.palette["checked_img"] = str(
+            fld / "icons" / f"checkedbox_{self.theme}.svg"
+        ).replace("\\", "/")
+
+        self.palette["unchecked_img"] = str(
+            fld / "icons" / f"box_{self.theme}.svg"
+        ).replace("\\", "/")
 
     def make_left_navbar(self):
+        """
+            Creates the structures tree hierarchy widget and populates 
+            it with structures names from the brainglobe-api's Atlas.hierarchy
+            tree view.
+        """
+        # Create QTree widget
+        treeView = QTreeView()
+        treeView.setExpandsOnDoubleClick(False)
+        treeView.setHeaderHidden(True)
+        treeView.setStyleSheet(update_css(tree_css, self.palette))
+        treeView.setWordWrap(False)
+
+        treeModel = QStandardItemModel()
+        rootNode = treeModel.invisibleRootItem()
+
+        # Add element's hierarchy
+        tree = self.scene.atlas.hierarchy
+        items = {}
+        for n, node in enumerate(tree.expand_tree()):
+            # Get Node info
+            node = tree.get_node(node)
+            if node.tag in ["VS", "fiber tracts"]:
+                continue
+
+            # Get brainregion name
+            name = self.scene.atlas._get_from_structure(node.tag, "name")
+
+            # Create Item
+            item = StandardItem(
+                name,
+                node.tag,
+                tree.depth(node.identifier),
+                self.palette["text"],
+            )
+
+            # Get/assign parents
+            parent = tree.parent(node.identifier)
+            if parent is not None:
+                if parent.identifier not in items.keys():
+                    continue
+                else:
+                    items[parent.identifier].appendRow(item)
+
+            # Keep track of added nodes
+            items[node.identifier] = item
+            if n == 0:
+                root = item
+
+        # Finish up
+        rootNode.appendRow(root)
+        treeView.setModel(treeModel)
+        treeView.expandToDepth(2)
+        self.treeView = treeView
+
+        return treeView
+
+    def make_right_navbar(self):
         # make layout
         layout = QVBoxLayout()
 
@@ -50,21 +136,6 @@ class UI(QMainWindow):
             btn.setObjectName(bname.replace(" ", "_"))
             self.buttons[bname.replace(" ", "_")] = btn
             layout.addWidget(btn)
-
-        # set spacing
-        layout.addStretch(5)
-        layout.setSpacing(20)
-
-        # make widget
-        widget = QWidget()
-        widget.setObjectName("LeftNavbar")
-        widget.setLayout(layout)
-
-        return widget
-
-    def make_right_navbar(self):
-        # make layout
-        layout = QVBoxLayout()
 
         # Add label
         layout.addWidget(QLabel("Actors"))
@@ -90,7 +161,7 @@ class UI(QMainWindow):
 
     def initUI(self):
         # Create navbars
-        left_navbar = self.make_left_navbar()
+        self.treeView = self.make_left_navbar()
         right_navbar = self.make_right_navbar()
 
         # Create brainrender widget
@@ -98,7 +169,7 @@ class UI(QMainWindow):
 
         # Make overall layout
         main_layout = QHBoxLayout()
-        main_layout.addWidget(left_navbar)
+        main_layout.addWidget(self.treeView)
         main_layout.addWidget(self.vtkWidget)
         main_layout.addWidget(right_navbar)
 

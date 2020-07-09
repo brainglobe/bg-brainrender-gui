@@ -14,69 +14,67 @@ palette = {  # from napari.utils.theme
     "canvas": "black",
 }
 
-style = f"""
-QWidget#LeftNavbar {{
-    background-color: {palette['background']};
-    border: 2px solid {palette['text']};
+style = """
+QWidget#LeftNavbar {
+    background-color: BGCOLOR;
+    border: 2px solid TXTCOLOR;
     border-radius: 24px;
     margin: 12px 12px;
     padding: 24px 12px;
-}}
-QWidget#RightNavbar {{
-    background-color: {palette['background']};
-    border: 2px solid {palette['text']};
-    border-radius: 24px;
+}
+QWidget#RightNavbar {
+    background-color: BGCOLOR;
     margin: 12px 12px;
     padding: 24px 12px;
-}}
-QWidget#MainWidget {{
-    background-color: {palette['background']};
+}
+QWidget#MainWidget {
+    background-color: BGCOLOR;
     padding: 48px;
-}}
+}
 
 
 
-QPushButton {{ 
-    background-color: {palette['foreground']};
-    color: {palette['text']};
+QPushButton { 
+    background-color: FGCOLOR;
+    color: TXTCOLOR;
     border-radius: 8px;
     padding: 6px;
     font-size: 14pt;
     margin: 4px 34px;
 
-}}
-QPushButton:hover {{
-    border: 1px solid {palette['text']};
-}}
+}
+QPushButton:hover {
+    border: 1px solid TXTCOLOR;
+}
 
 
 
-QLabel {{
-    color: {palette['text']};
+QLabel {
+    color: TXTCOLOR;
     font-size: 16pt;
     font-weight: 700;
     margin: 12px 24px;
-}}
-QLabel#PopupLabel {{
-    color: {palette['text']};
+}
+QLabel#PopupLabel {
+    color: TXTCOLOR;
     font-size: 12pt;
     font-weight: 400;
     margin: 12px 24px;
-}}
+}
 
 
-QListWidget#actors_list {{
-    background-color: {palette['foreground']};
-    color: {palette['text']};
+QListWidget#actors_list {
+    background-color: FGCOLOR;
+    color: TXTCOLOR;
     border-radius: 8px;
     padding: 6px;
     font-size: 14pt;
     margin: 4px 34px;
-}}
+}
 
-QLineEdit {{
-    background-color: {palette['foreground']};
-    color: {palette['text']};
+QLineEdit {
+    background-color: FGCOLOR;
+    color: TXTCOLOR;
     border-radius: 8px;
     padding: 6px;
     font-size: 12pt;
@@ -84,12 +82,55 @@ QLineEdit {{
     min-width: 600px;
     margin: 4px 34px;
     width: 80%
-}}
-QDialog {{
-    background-color: {palette['background']};
-}}
-QPushButton#RegionsButton {{
-    width: 80%;
-}}
+}
+QDialog {
+    background-color: BGCOLOR;
+}
+QPushButton#RegionsButton {
+    width: 60%;
+}
 
 """
+
+
+# for ref: https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtreeview
+tree_css = """
+QTreeView {
+    background-color: BGCOLOR; 
+    border-radius: 12px; 
+    padding: 20px 12px;
+} 
+
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(CLOSED_IMG);
+}
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(OPENED_IMG);
+}
+QTreeView::indicator:checked {
+    image: url(CHECKED_IMG);
+}
+QTreeView::indicator:unchecked {
+    image: url(UNCHECKED_IMG);
+} 
+"""
+
+
+def update_css(css, palette):
+    css = css.replace("FGCOLOR", palette["foreground"])
+    css = css.replace("BGCOLOR", palette["background"])
+    css = css.replace("TXTCOLOR", palette["text"])
+    css = css.replace("HIGHLIGHT", palette["highlight"])
+
+    css = css.replace("CLOSED_IMG", palette["branch_closed_img"])
+    css = css.replace("OPENED_IMG", palette["branch_opened_img"])
+
+    css = css.replace("UNCHECKED_IMG", palette["unchecked_img"])
+    css = css.replace("CHECKED_IMG", palette["checked_img"])
+
+    return css
