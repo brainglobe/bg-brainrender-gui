@@ -17,12 +17,21 @@ palette = {  # from napari.utils.theme
 style = f"""
 QWidget#LeftNavbar {{
     background-color: {palette['background']};
+    border: 2px solid {palette['text']};
+    border-radius: 24px;
+    margin: 12px 12px;
+    padding: 24px 12px;
 }}
 QWidget#RightNavbar {{
     background-color: {palette['background']};
+    border: 2px solid {palette['text']};
+    border-radius: 24px;
+    margin: 12px 12px;
+    padding: 24px 12px;
 }}
 QWidget#MainWidget {{
     background-color: {palette['background']};
+    padding: 48px;
 }}
 
 
@@ -46,7 +55,13 @@ QLabel {{
     color: {palette['text']};
     font-size: 16pt;
     font-weight: 700;
-    margin: 12px 24;
+    margin: 12px 24px;
+}}
+QLabel#PopupLabel {{
+    color: {palette['text']};
+    font-size: 12pt;
+    font-weight: 400;
+    margin: 12px 24px;
 }}
 
 
@@ -57,6 +72,24 @@ QListWidget#actors_list {{
     padding: 6px;
     font-size: 14pt;
     margin: 4px 34px;
+}}
+
+QLineEdit {{
+    background-color: {palette['foreground']};
+    color: {palette['text']};
+    border-radius: 8px;
+    padding: 6px;
+    font-size: 12pt;
+    height: 48px;
+    min-width: 600px;
+    margin: 4px 34px;
+    width: 80%
+}}
+QDialog {{
+    background-color: {palette['background']};
+}}
+QPushButton#RegionsButton {{
+    width: 80%;
 }}
 
 """

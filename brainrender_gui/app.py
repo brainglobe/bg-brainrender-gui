@@ -3,6 +3,7 @@ from brainrender.scene import Scene
 from brainrender.Utils.camera import set_camera
 from vedo import Plotter, addons
 from collections import namedtuple
+from qtpy.QtWidgets import QFileDialog
 
 from brainrender_gui.ui import UI
 from brainrender_gui.widgets.actors_list import update_actors_list
@@ -37,7 +38,15 @@ class App(Scene, UI):
         self.buttons["add_brain_regions"].clicked.connect(
             self.open_regions_dialog
         )
+        self.buttons["add_from_file"].clicked.connect(
+            self.add_from_file_object
+        )
+        self.buttons["add_cells"].clicked.connect(self.add_from_file_cells)
+        self.buttons["add_sharptrack"].clicked.connect(
+            self.add_from_file_sharptrack
+        )
 
+    # ---------------------------- Add/Update regions ---------------------------- #
     def open_regions_dialog(self):
         self.regions_dialog = Window2(self)
 
@@ -45,6 +54,38 @@ class App(Scene, UI):
         self.scene.add_brain_regions(regions)
         self._update()
 
+    # ------------------------------- Add from file ------------------------------ #
+
+    def open_file(self):
+        options = QFileDialog.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        fname, _ = QFileDialog.getOpenFileName(
+            self,
+            "QFileDialog.getOpenFileName()",
+            "",
+            "All Files (*)",
+            options=options,
+        )
+        return fname
+
+    def add_from_file(self, fun):
+        fname = self.open_file()
+        if not fname:
+            return
+        else:
+            fun(fname)
+            self._update()
+
+    def add_from_file_object(self):
+        self.add_from_file(self.scene.add_from_file)
+
+    def add_from_file_sharptrack(self):
+        self.add_from_file(self.scene.add_probe_from_sharptrack)
+
+    def add_from_file_cells(self):
+        self.add_from_file(self.scene.add_cells_from_file)
+
+    # -------------------------------- Actors list ------------------------------- #
     def actor_list_clicked(self, index):
         """
             When an item in the actors list is clicked
@@ -62,6 +103,7 @@ class App(Scene, UI):
 
         self._update()
 
+    # ------------------------------- Initial setup ------------------------------ #
     def setup_plotter(self):
         """
             Changes the scene's default plotter
@@ -98,6 +140,7 @@ class App(Scene, UI):
         # Fix camera
         set_camera(self.scene, self.scene.camera)
 
+    # ---------------------------------- Update ---------------------------------- #
     def _update_actors(self):
         """
             All actors that are part of the scene are stored

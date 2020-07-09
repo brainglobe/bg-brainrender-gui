@@ -19,6 +19,7 @@ class UI(QMainWindow):
         "add brain regions",
         "add cells",
         "add from file",
+        "add sharptrack",
     ]
 
     def __init__(self):

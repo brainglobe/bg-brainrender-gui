@@ -15,7 +15,13 @@ To do:
  - [x] brainrender widget
  - [x] left sidebar buttons
       - [x] add_brain_regions functionality
-      - [ ] add cells from file functionality
+      - [x] add cells from file functionality
   - [x] right sidebar
        - [x] rendered item list
        - [x] visibility toggle functionality
+
+  - [ ] split actors list based on type of data (e.g. regions vs from file vs cells)
+  - [ ] actors list: add icon to show what kind of data
+  - [ ] actors list: UI to show hidden/shown
+
+  - [ ] add structures tree widget like bgviewer
