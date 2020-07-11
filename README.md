@@ -20,8 +20,7 @@ To do:
        - [x] rendered item list
        - [x] visibility toggle functionality
 
-  - [ ] split actors list based on type of data (e.g. regions vs from file vs cells)
   - [ ] actors list: add icon to show what kind of data
   - [x] actors list: UI to show hidden/shown
 
-  - [ ] add structures tree widget like bgviewer
+  - [x] add structures tree widget like bgviewer
