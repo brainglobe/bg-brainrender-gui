@@ -26,10 +26,10 @@ To do:
   * [ ] more add X functionality??
 
   * [ ] widget to try different shading styles?
-  * [ ] when adding actors to scene, options to edit appearence
+  * [x] when adding actors to scene, options to edit appearence
          * color
          * alpha
          * wireframe
 
-  * [ ] actors list: add icon to show what kind of data
-  * [ ] actors list: single click -> actor edit, doble click toggle on/off
+  * [x] actors list: add icon to show what kind of data
+  * [x] actors list: single click -> actor edit, doble click toggle on/off
