@@ -11,16 +11,26 @@ Design:
   
   
 To do:
- - [x] general UI
- - [x] brainrender widget
- - [x] left sidebar buttons
-      - [x] add_brain_regions functionality
-      - [x] add cells from file functionality
-  - [x] right sidebar
-       - [x] rendered item list
-       - [x] visibility toggle functionality
+ * [x] general UI
+ * [x] brainrender widget
+ * [x] left sidebar buttons
+      * [x] add_brain_regions functionality
+      * [x] add cells from file functionality
+  * [x] right sidebar
+       * [x] rendered item list
+       * [x] visibility toggle functionality
+  * [x] actors list: UI to show hidden/shown
+  * [x] add structures tree widget like bgviewer
+  
+  * [ ] UI design improvements
+  * [ ] add sharptrack buggy in brainrender
+  * [ ] more add X functionality??
 
-  - [ ] actors list: add icon to show what kind of data
-  - [x] actors list: UI to show hidden/shown
+  * [ ] widget to try different shading styles?
+  * [ ] when adding actors to scene, options to edit appearence
+         * color
+         * alpha
+         * wireframe
 
-  - [x] add structures tree widget like bgviewer
+  * [ ] actors list: add icon to show what kind of data
+  * [ ] actors list: single click -> actor edit, doble click toggle on/off
