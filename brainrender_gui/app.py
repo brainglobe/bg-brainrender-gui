@@ -4,7 +4,7 @@ from brainrender.Utils.camera import set_camera
 from vedo import Plotter, addons
 from collections import namedtuple
 from qtpy.QtWidgets import QFileDialog
-from qtpy.QtGui import QColor
+from qtpy.QtGui import QColor, QIcon
 from PyQt5.Qt import Qt
 import numpy as np
 
@@ -190,13 +190,16 @@ class App(Scene, UI):
         # Toggle list item UI
         if self.actors[aname].is_visible:
             txt = palette["text"]
+            icon = QIcon('brainrender_gui/icons/eye.svg')
         else:
             txt = palette["primary"]
+            icon = QIcon('brainrender_gui/icons/eye-slash.svg')
         rgb = txt.replace(")", "").replace(" ", "").split("(")[-1].split(",")
 
         listitem.setForeground(
             QColor(*[int(r) for r in rgb])
         )
+        listitem.setIcon(icon)
 
         # update
         self._update()
@@ -210,7 +213,13 @@ class App(Scene, UI):
             actor = self.actors[aname]
 
         self.alpha_textbox.setText(str(actor.alpha))
-        self.color_textbox.setText(str(actor.color))
+
+        if isinstance(actor.color, np.ndarray):
+            color = ''.join([str(c)+' ' for c in actor.color]).rstrip()
+        else:
+            color = color
+
+        self.color_textbox.setText(color)
 
 
     # ------------------------------- Initial setup ------------------------------ #

@@ -17,7 +17,6 @@ import os
 from pathlib import Path
 from brainrender_gui.style import style, tree_css, update_css
 from brainrender_gui.widgets.tree import StandardItem
-from brainrender_gui.widgets.hline import QHSeperationLine
 
 class UI(QMainWindow):
     buttons = {}
