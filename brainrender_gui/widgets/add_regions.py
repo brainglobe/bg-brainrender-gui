@@ -1,11 +1,11 @@
 from qtpy.QtWidgets import QDialog, QLineEdit, QPushButton, QLabel, QVBoxLayout
-from brainrender_gui.style import style
+from brainrender_gui.style import style, update_css
 
 
-class Window2(QDialog):
+class AddRegionsWindow(QDialog):
     left = 250
     top = 250
-    width = 800
+    width = 400
     height = 300
 
     label_msg = (
@@ -13,12 +13,12 @@ class Window2(QDialog):
         + "you wish to add.\n[as 'space' separated strings (e.g.: STN TH)]"
     )
 
-    def __init__(self, main_window):
+    def __init__(self, main_window, palette):
         super().__init__()
         self.setWindowTitle("Add brain regions")
         self.ui()
         self.main_window = main_window
-        self.setStyleSheet(style)
+        self.setStyleSheet(update_css(style, palette))
 
     def ui(self):
         self.setGeometry(self.left, self.top, self.width, self.height)

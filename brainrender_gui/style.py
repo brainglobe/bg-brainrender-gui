@@ -61,7 +61,15 @@ QLabel#PopupLabel {
     font-weight: 400;
     margin: 12px 24px;
 }
-
+QLabel#PropertyName {
+    font-size: 14pt;
+    font-weight: 500;
+    margin: 0px 24px;
+}
+QLabel#LabelWithBorder {
+    border-top: 1px solid TXTCOLOR;
+    padding-top: 12px;
+}
 
 QListWidget#actors_list {
     background-color: FGCOLOR;
@@ -82,6 +90,11 @@ QLineEdit {
     min-width: 600px;
     margin: 4px 34px;
     width: 80%
+}
+QLineEdit#Property {
+    min-width: none;
+    height: 32px;
+    padding: 4px 6px;
 }
 QDialog {
     background-color: BGCOLOR;

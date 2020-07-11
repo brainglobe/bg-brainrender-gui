@@ -6,6 +6,7 @@ from qtpy.QtWidgets import (
     QWidget,
     QListWidget,
     QHBoxLayout,
+    QLineEdit,
     QTreeView,
 )
 from PyQt5.Qt import QStandardItemModel
@@ -16,7 +17,7 @@ import os
 from pathlib import Path
 from brainrender_gui.style import style, tree_css, update_css
 from brainrender_gui.widgets.tree import StandardItem
-
+from brainrender_gui.widgets.hline import QHSeperationLine
 
 class UI(QMainWindow):
     buttons = {}
@@ -138,12 +139,35 @@ class UI(QMainWindow):
             layout.addWidget(btn)
 
         # Add label
-        layout.addWidget(QLabel("Actors"))
+        lbl = QLabel("Actors")
+        lbl.setObjectName('LabelWithBorder')
+        layout.addWidget(lbl)
 
         # add list widget
         self.actors_list = QListWidget()
         self.actors_list.setObjectName("actors_list")
         layout.addWidget(self.actors_list)
+
+        # Add label
+        lbl = QLabel("Actor properties")
+        lbl.setObjectName('LabelWithBorder')
+        layout.addWidget(lbl)
+
+        # Actor Alpha
+        alphalabel = QLabel("Alpha")
+        alphalabel.setObjectName("PropertyName")
+        self.alpha_textbox = QLineEdit(self)
+        self.alpha_textbox.setObjectName("Property")
+        layout.addWidget(alphalabel)
+        layout.addWidget(self.alpha_textbox)
+
+        # Actor Color
+        colorlabel = QLabel("Color")
+        colorlabel.setObjectName("PropertyName")
+        self.color_textbox = QLineEdit(self)
+        self.color_textbox.setObjectName("Property")
+        layout.addWidget(colorlabel)
+        layout.addWidget(self.color_textbox)
 
         # set spacing
         layout.addStretch(5)

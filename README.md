@@ -23,7 +23,6 @@ To do:
   * [x] add structures tree widget like bgviewer
   
   * [ ] UI design improvements
-  * [ ] add sharptrack buggy in brainrender
   * [ ] more add X functionality??
 
   * [ ] widget to try different shading styles?

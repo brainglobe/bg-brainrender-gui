@@ -6,21 +6,15 @@ from collections import namedtuple
 from qtpy.QtWidgets import QFileDialog
 from qtpy.QtGui import QColor
 from PyQt5.Qt import Qt
-
+import numpy as np
 
 from brainrender_gui.ui import UI
 from brainrender_gui.widgets.actors_list import (
     update_actors_list,
     remove_from_list,
 )
-from brainrender_gui.widgets.add_regions import Window2
+from brainrender_gui.widgets.add_regions import AddRegionsWindow
 from brainrender_gui.style import palette
-
-"""
-    # ! known issues
-        when toggling actors, if all are toggled OFF that doesn't work
-            at least one actor needs to show at all times
-"""
 
 
 class App(Scene, UI):
@@ -34,13 +28,14 @@ class App(Scene, UI):
 
         # Setup brainrender plotter
         self.axes = axes
-        self.atuple = namedtuple("actor", "mesh, is_visible")
+        self.atuple = namedtuple("actor", "mesh, is_visible, color, alpha")
 
         self.setup_plotter()
         self._update()
         self.scene._get_inset()
 
         # Setup widgets functionality
+        self.actors_list.itemDoubleClicked.connect(self.actor_list_double_clicked)
         self.actors_list.clicked.connect(self.actor_list_clicked)
         self.buttons["add_brain_regions"].clicked.connect(
             self.open_regions_dialog
@@ -53,12 +48,53 @@ class App(Scene, UI):
             self.add_from_file_sharptrack
         )
 
-        # Add callback
+        
         self.treeView.clicked.connect(self.add_region_from_tree)
+
+        self.alpha_textbox.textChanged.connect(self.update_actor_properties)
+        self.color_textbox.textChanged.connect(self.update_actor_properties)
+
+    # ---------------------------- Update actor props ---------------------------- #
+    def update_actor_properties(self):
+        # Get currently selected actor
+        aname = self.actors_list.currentItem().text()
+        if aname not in self.actors.keys():
+            raise ValueError(f"Actor {aname} not in the actors record")
+        else:
+            actor = self.actors[aname]
+
+        # Get color
+        if not self.color_textbox.text(): return
+        try:
+            rgb = self.color_textbox.text()
+            rgb = rgb.replace('[', '').replace(']', '')
+            color = np.array([float(c) for c in rgb.split(' ')])
+        except:
+            color = self.color_textbox.text()
+
+        # Get alpha
+        try:
+            alpha = float(self.alpha_textbox.text())
+        except ValueError:
+            return
+
+        # Update actor
+
+        try:
+            self.actors[aname] = self.atuple(
+                                    actor.mesh,
+                                    actor.is_visible,
+                                    color,
+                                    alpha
+                                    )
+            self._update()
+        except IndexError:  # likely something went wrong with getting of color
+            self.actors[aname] = actor
+            return
 
     # ---------------------------- Add/Update regions ---------------------------- #
     def open_regions_dialog(self):
-        self.regions_dialog = Window2(self)
+        self.regions_dialog = AddRegionsWindow(self, self.palette)
 
     def add_regions(self, regions):
         self.scene.add_brain_regions(regions)
@@ -136,7 +172,7 @@ class App(Scene, UI):
         self.add_from_file(self.scene.add_cells_from_file)
 
     # -------------------------------- Actors list ------------------------------- #
-    def actor_list_clicked(self, index):
+    def actor_list_double_clicked(self, listitem):
         """
             When an item in the actors list is clicked
             it toggles the corresponding actor's visibility
@@ -149,7 +185,7 @@ class App(Scene, UI):
             actor = self.actors[aname]
 
         # Toggle visibility
-        self.actors[aname] = self.atuple(actor.mesh, not actor.is_visible)
+        self.actors[aname] = self.atuple(actor.mesh, not actor.is_visible, actor.color, actor.alpha)
 
         # Toggle list item UI
         if self.actors[aname].is_visible:
@@ -157,12 +193,25 @@ class App(Scene, UI):
         else:
             txt = palette["primary"]
         rgb = txt.replace(")", "").replace(" ", "").split("(")[-1].split(",")
-        self.actors_list.item(index.row()).setForeground(
+
+        listitem.setForeground(
             QColor(*[int(r) for r in rgb])
         )
 
-        # uPDATE
+        # update
         self._update()
+
+    def actor_list_clicked(self, index):
+        # Get actor
+        aname = self.actors_list.currentItem().text()
+        if aname not in self.actors.keys():
+            raise ValueError(f"Actor {aname} not in the actors record")
+        else:
+            actor = self.actors[aname]
+
+        self.alpha_textbox.setText(str(actor.alpha))
+        self.color_textbox.setText(str(actor.color))
+
 
     # ------------------------------- Initial setup ------------------------------ #
     def setup_plotter(self):
@@ -215,7 +264,7 @@ class App(Scene, UI):
             if actor is None:
                 continue
             if actor.name not in self.actors.keys():
-                self.actors[actor.name] = self.atuple(actor, True)
+                self.actors[actor.name] = self.atuple(actor, True, actor.color(), actor.alpha())
 
     def _update(self):
         """
@@ -224,18 +273,17 @@ class App(Scene, UI):
         """
         # Get actors to render
         self._update_actors()
-        to_render = [at.mesh for at in self.actors.values() if at.is_visible]
+        to_render = [act for act in self.actors.values() if act.is_visible]
 
-        # Make sure root toggles correctly
-        if "root" not in [a.name for a in to_render]:
-            self.scene.root = None
-        elif self.scene.root is None:
-            self.scene.add_root()
+        # Set actors look
+        meshes = [act.mesh.c(act.color).alpha(act.alpha) for act in to_render]
+        
 
         # update actors rendered
-        self.scene.apply_render_style()
+        self.scene.apply_render_style() 
         self.scene.plotter.show(
-            *to_render, interactorStyle=0, bg=brainrender.BACKGROUND_COLOR,
+            *meshes, 
+            interactorStyle=0, bg=brainrender.BACKGROUND_COLOR,
         )
 
         # Fake a button press to force canvas update
