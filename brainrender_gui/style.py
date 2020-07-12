@@ -57,9 +57,9 @@ QLabel {
 }
 QLabel#PopupLabel {
     color: TXTCOLOR;
-    font-size: 12pt;
+    font-size: 14pt;
     font-weight: 400;
-    margin: 12px 24px;
+    margin: 12px;
 }
 QLabel#PropertyName {
     font-size: 14pt;

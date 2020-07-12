@@ -1,6 +1,6 @@
 **To - Do**
 - [x] command line interface: `-a` and `-axes` options
-- [ ] add brain regions window: options for color and alpha 
+- [x] add brain regions window: options for color and alpha 
 - [ ] add cells, from file -> options for color and alpha
 - [ ] more extensive tests.
 - [ ] BUG: pip install followed by command line results in structures tree icons not loading:

@@ -38,12 +38,28 @@ class AddRegionsWindow(QDialog):
 
         layout = QVBoxLayout()
 
+        # Regions
         label = QLabel(self)
         label.setObjectName("PopupLabel")
         label.setText(self.label_msg)
 
-        # Create textbox
         self.textbox = QLineEdit(self)
+
+        # Alpha
+        alpha_label = QLabel(self)
+        alpha_label.setObjectName("PopupLabel")
+        alpha_label.setText("Alpha")
+
+        self.alpha_textbox = QLineEdit(self)
+        self.alpha_textbox.setText(str(1.0))
+
+        # Color
+        color_label = QLabel(self)
+        color_label.setObjectName("PopupLabel")
+        color_label.setText("Color")
+
+        self.color_textbox = QLineEdit(self)
+        self.color_textbox.setText("atlas")
 
         # Create a button in the window
         self.button = QPushButton("Add regions", self)
@@ -52,6 +68,13 @@ class AddRegionsWindow(QDialog):
 
         layout.addWidget(label)
         layout.addWidget(self.textbox)
+
+        layout.addWidget(alpha_label)
+        layout.addWidget(self.alpha_textbox)
+
+        layout.addWidget(color_label)
+        layout.addWidget(self.color_textbox)
+
         layout.addWidget(self.button)
 
         self.setLayout(layout)
@@ -64,6 +87,8 @@ class AddRegionsWindow(QDialog):
             method of the main window
         """
         regions = self.textbox.text().split(" ")
-        self.main_window.add_regions(regions)
+        self.main_window.add_regions(
+            regions, self.alpha_textbox.text(), self.color_textbox.text()
+        )
 
         self.close()

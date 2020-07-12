@@ -15,6 +15,7 @@ from brainrender_gui.widgets.actors_list import (
 )
 from brainrender_gui.widgets.add_regions import AddRegionsWindow
 from brainrender_gui.style import palette
+from brainrender_gui.utils import get_color_from_string, get_alpha_from_string
 
 
 class App(Scene, UI):
@@ -101,18 +102,11 @@ class App(Scene, UI):
         # Get color
         if not self.color_textbox.text():
             return
-
-        try:
-            rgb = self.color_textbox.text()
-            rgb = rgb.replace("[", "").replace("]", "")
-            color = np.array([float(c) for c in rgb.split(" ")])
-        except ValueError:
-            color = self.color_textbox.text()
+        color = get_color_from_string(self.color_textbox.text())
 
         # Get alpha
-        try:
-            alpha = float(self.alpha_textbox.text())
-        except ValueError:
+        alpha = get_alpha_from_string(self.alpha_textbox.text())
+        if alpha is None:
             return
 
         # Update actor
@@ -133,13 +127,37 @@ class App(Scene, UI):
         """
         self.regions_dialog = AddRegionsWindow(self, self.palette)
 
-    def add_regions(self, regions):
+    def add_regions(self, regions, alpha, color):
         """
             Called by AddRegionsWindow when it closes.
             It adds brain regions to the scene
+
+            Arguments:
+            ----------
+            regions: list of strings with regions acronyms
+            alpha: str, meshes transparency
+            color: str, meshes color. If 'atlas' the default colors are used
         """
+        # Get params
+        alpha = get_alpha_from_string(alpha)
+        if alpha is None:
+            alpha = brainrender.DEFAULT_MESH_ALPHA
+
+        color = get_color_from_string(color)
+        if color == "atlas":
+            use_original = True
+            colors = None
+        else:
+            use_original = False
+            colors = color
+
         # Add brain regions
-        self.scene.add_brain_regions(regions)
+        self.scene.add_brain_regions(
+            regions,
+            alpha=alpha,
+            use_original_color=use_original,
+            colors=colors,
+        )
 
         # Toggle treview entries
         # TODO update treeview item corresponding to regions
@@ -189,21 +207,6 @@ class App(Scene, UI):
 
     # ------------------------------- Add from file ------------------------------ #
 
-    def open_file(self):
-        """
-            Pyqt5 dialog for selecting and loading files
-        """
-        options = QFileDialog.Options()
-        # options |= QFileDialog.DontUseNativeDialog
-        fname, _ = QFileDialog.getOpenFileName(
-            self,
-            "QFileDialog.getOpenFileName()",
-            "",
-            "All Files (*)",
-            options=options,
-        )
-        return fname
-
     def add_from_file(self, fun):
         """
             General function for selecting, loading
@@ -215,7 +218,17 @@ class App(Scene, UI):
             fun: function. One of Scene's methods used to add the file's
                     content to the scene.
         """
-        fname = self.open_file()
+        options = QFileDialog.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+
+        fname, _ = QFileDialog.getOpenFileName(
+            self,
+            "QFileDialog.getOpenFileName()",
+            "",
+            "All Files (*)",
+            options=options,
+        )
+
         if not fname:
             return
         else:
