@@ -18,6 +18,7 @@ from pathlib import Path
 from brainrender_gui.style import style, tree_css, update_css
 from brainrender_gui.widgets.tree import StandardItem
 
+
 class UI(QMainWindow):
     buttons = {}
 
@@ -139,7 +140,7 @@ class UI(QMainWindow):
 
         # Add label
         lbl = QLabel("Actors")
-        lbl.setObjectName('LabelWithBorder')
+        lbl.setObjectName("LabelWithBorder")
         layout.addWidget(lbl)
 
         # add list widget
@@ -149,7 +150,7 @@ class UI(QMainWindow):
 
         # Add label
         lbl = QLabel("Actor properties")
-        lbl.setObjectName('LabelWithBorder')
+        lbl.setObjectName("LabelWithBorder")
         layout.addWidget(lbl)
 
         # Actor Alpha
@@ -170,10 +171,10 @@ class UI(QMainWindow):
 
         # Add label
         lbl = QLabel("Show structures tree")
-        lbl.setObjectName('LabelWithBorder')
+        lbl.setObjectName("LabelWithBorder")
         layout.addWidget(lbl)
 
-        btn = QPushButton('Show structures tree', self)
+        btn = QPushButton("Show structures tree", self)
         self.buttons[btn.text().lower().replace(" ", "_")] = btn
         layout.addWidget(btn)
 

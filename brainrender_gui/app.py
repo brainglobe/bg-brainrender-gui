@@ -35,7 +35,9 @@ class App(Scene, UI):
         self.scene._get_inset()
 
         # Setup widgets functionality
-        self.actors_list.itemDoubleClicked.connect(self.actor_list_double_clicked)
+        self.actors_list.itemDoubleClicked.connect(
+            self.actor_list_double_clicked
+        )
         self.actors_list.clicked.connect(self.actor_list_clicked)
         self.buttons["add_brain_regions"].clicked.connect(
             self.open_regions_dialog
@@ -47,9 +49,10 @@ class App(Scene, UI):
         self.buttons["add_sharptrack"].clicked.connect(
             self.add_from_file_sharptrack
         )
-        self.buttons['show_structures_tree'].clicked.connect(self.toggle_treeview)
+        self.buttons["show_structures_tree"].clicked.connect(
+            self.toggle_treeview
+        )
 
-        
         self.treeView.clicked.connect(self.add_region_from_tree)
 
         self.alpha_textbox.textChanged.connect(self.update_actor_properties)
@@ -58,10 +61,14 @@ class App(Scene, UI):
     # ------------------------------ Toggle treeview ----------------------------- #
     def toggle_treeview(self):
         if not self.treeView.isHidden():
-            self.buttons['show_structures_tree'].setText('Show structures tree')
+            self.buttons["show_structures_tree"].setText(
+                "Show structures tree"
+            )
         else:
-            self.buttons['show_structures_tree'].setText('Hide structures tree')
-        
+            self.buttons["show_structures_tree"].setText(
+                "Hide structures tree"
+            )
+
         self.treeView.setHidden(not self.treeView.isHidden())
 
     # ---------------------------- Update actor props ---------------------------- #
@@ -74,12 +81,14 @@ class App(Scene, UI):
             actor = self.actors[aname]
 
         # Get color
-        if not self.color_textbox.text(): return
+        if not self.color_textbox.text():
+            return
+
         try:
             rgb = self.color_textbox.text()
-            rgb = rgb.replace('[', '').replace(']', '')
-            color = np.array([float(c) for c in rgb.split(' ')])
-        except:
+            rgb = rgb.replace("[", "").replace("]", "")
+            color = np.array([float(c) for c in rgb.split(" ")])
+        except ValueError:
             color = self.color_textbox.text()
 
         # Get alpha
@@ -92,11 +101,8 @@ class App(Scene, UI):
 
         try:
             self.actors[aname] = self.atuple(
-                                    actor.mesh,
-                                    actor.is_visible,
-                                    color,
-                                    alpha
-                                    )
+                actor.mesh, actor.is_visible, color, alpha
+            )
             self._update()
         except IndexError:  # likely something went wrong with getting of color
             self.actors[aname] = actor
@@ -195,20 +201,20 @@ class App(Scene, UI):
             actor = self.actors[aname]
 
         # Toggle visibility
-        self.actors[aname] = self.atuple(actor.mesh, not actor.is_visible, actor.color, actor.alpha)
+        self.actors[aname] = self.atuple(
+            actor.mesh, not actor.is_visible, actor.color, actor.alpha
+        )
 
         # Toggle list item UI
         if self.actors[aname].is_visible:
             txt = palette["text"]
-            icon = QIcon('brainrender_gui/icons/eye.svg')
+            icon = QIcon("brainrender_gui/icons/eye.svg")
         else:
             txt = palette["primary"]
-            icon = QIcon('brainrender_gui/icons/eye-slash.svg')
+            icon = QIcon("brainrender_gui/icons/eye-slash.svg")
         rgb = txt.replace(")", "").replace(" ", "").split("(")[-1].split(",")
 
-        listitem.setForeground(
-            QColor(*[int(r) for r in rgb])
-        )
+        listitem.setForeground(QColor(*[int(r) for r in rgb]))
         listitem.setIcon(icon)
 
         # update
@@ -225,12 +231,11 @@ class App(Scene, UI):
         self.alpha_textbox.setText(str(actor.alpha))
 
         if isinstance(actor.color, np.ndarray):
-            color = ''.join([str(c)+' ' for c in actor.color]).rstrip()
+            color = "".join([str(c) + " " for c in actor.color]).rstrip()
         else:
             color = color
 
         self.color_textbox.setText(color)
-
 
     # ------------------------------- Initial setup ------------------------------ #
     def setup_plotter(self):
@@ -283,7 +288,9 @@ class App(Scene, UI):
             if actor is None:
                 continue
             if actor.name not in self.actors.keys():
-                self.actors[actor.name] = self.atuple(actor, True, actor.color(), actor.alpha())
+                self.actors[actor.name] = self.atuple(
+                    actor, True, actor.color(), actor.alpha()
+                )
 
     def _update(self):
         """
@@ -296,13 +303,11 @@ class App(Scene, UI):
 
         # Set actors look
         meshes = [act.mesh.c(act.color).alpha(act.alpha) for act in to_render]
-        
 
         # update actors rendered
-        self.scene.apply_render_style() 
+        self.scene.apply_render_style()
         self.scene.plotter.show(
-            *meshes, 
-            interactorStyle=0, bg=brainrender.BACKGROUND_COLOR,
+            *meshes, interactorStyle=0, bg=brainrender.BACKGROUND_COLOR,
         )
 
         # Fake a button press to force canvas update
