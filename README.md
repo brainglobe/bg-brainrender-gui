@@ -1,37 +1,57 @@
-# bg-brainrender-gui
-A GUI built on brainrender: visualise brain regions, neurons and labelled cells. 
+**To - Do**
+- [ ] command line interface: `-a` and `-axes` options
+- [ ] add brain regions window: options for color and alpha 
+- [ ] add cells, from file -> options for color and alpha
 
-The goal is to build a **nice** GUI (using pyside2) around brainrender.
 
-Design: 
-  - right sidebar: buttons to do thinks like `add brain regions`
-        these buttons, when clicked, should open a new window with the widget for the specific function (e.g. an input for the brain regions to add, colors, alpha etc...)
-  - brainrender widget: most of the window should be dedicated to the brainrender window for visualisation and interaction
-  - right sidebar: an overview of what's currently rendered in the scene with an option to toggle visibility on/off
-  
-  
-To do:
- * [x] general UI
- * [x] brainrender widget
- * [x] left sidebar buttons
-      * [x] add_brain_regions functionality
-      * [x] add cells from file functionality
-  * [x] right sidebar
-       * [x] rendered item list
-       * [x] visibility toggle functionality
-  * [x] actors list: UI to show hidden/shown
-  * [x] add structures tree widget like bgviewer
-  
-  * [ ] UI design improvements
-  * [ ] more add X functionality??
+ bg-brainrender-gui
+`bg-brainrender-gui` is a `pyqt5` based GUI built around [`brainrender`](https://github.com/BrancoLab/BrainRender).
 
-  * [ ] widget to try different shading styles?
-  * [x] when adding actors to scene, options to edit appearence
-         * color
-         * alpha
-         * wireframe
+The goal of this program is to provide an easy to use graphical interface for `brainrender`, enabling the creation of 3d anatomical renderings with minimal coding requirements. 
 
-  * [x] actors list: add icon to show what kind of data
-  * [x] actors list: single click -> actor edit, doble click toggle on/off
-  * [x] turn structures tree into a widget that can be shown/hidden
+Currently `bg-brainrender-gui` only supports some of `brainrender`'s core functionality, but we are happy to extend `bg-brainrender-gui` should there be interest in this. 
 
+## Installation
+Once the software will be released, it can be installed as a pithon package with `pip`.
+
+
+## Usage
+You can **start** `brainrender-gui` directly from your terminal with the command 
+```
+brainrender-gui
+```
+
+When using this command you can:
+* Use the `-a` command followed by the name of a [brainglobe atlas api](https://github.com/brainglobe/bg-atlasapi) atlas to use the selected atalas (e.g. `brainrender-gui -a allen_human_500um`)
+* Use the `-axes` flag to have axes rendered in the `brainrender` scene.
+
+
+Starting `brainrender-gui` will open a window like this: 
+![](screenshots/app.png)
+
+The buttons on the right panel can be used to add, remove and edit elements of the `brainrender` scene.
+
+### Adding actors
+The first set of buttons is used to add elements to the brainrender scene
+* `Add brain regions`: clicking on this button opens a new window where the user can input the names of the brain regions to be added to the brainrender scene. At this stage the user can also specify the transparency and color of the regions' mesh.
+* `Add cells`: clicking on this button opens a dialog to select and load a file containing cell coordinates data (e.g. a `csv` file). At this stage the user can also specify the transparency and color of the cells' mesh.
+* `Add from file`: clicking on this button opens a dialog to select and load a file for a 3d mesh (e.g. a `.obj` file). At this stage the user can also specify the transparency and color of the mesh.
+* `Add sharptrack`: clicking on this button opens a dialog to select and load a `.m` file with the output of SHARPTRACK.
+
+### Editing actors
+Whenever an actor is added to the scene, its name will be added to the `Actors` list. The list can also be used to edit rendered actors:
+* Double clickling an actor's name will toggle the visibility of the corresponding mesh. 
+* A single click on an actor's name selects it for editing with the `alpha` and `color` options below the list. 
+
+Once an actor is selected from the `Actors` list, its color and alpha will appear in the text boxes below. Editing the values in these textboxes change the corresponding actor's properties. 
+
+### The hierarchy view
+Pressing the `Show structures tree` button at the bottom right of the window shows a panel with the hierarchy view of brain regions in the selected atlas:
+![](screenshots/app2.png)
+
+The hierarchy view can be used to explore the structures hierarchy as well as to add brain regions to the scene: clicking on a region's tickbox will add it to the list of actors in the scene. Click
+
+Press the same button again to hide the treeview.
+
+# Getting in touch
+For any issue, question or bug report regarding this software, please open an issue in the [github repository](https://github.com/brainglobe/bg-brainrender-gui).
