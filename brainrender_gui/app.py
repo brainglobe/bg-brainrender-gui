@@ -47,12 +47,22 @@ class App(Scene, UI):
         self.buttons["add_sharptrack"].clicked.connect(
             self.add_from_file_sharptrack
         )
+        self.buttons['show_structures_tree'].clicked.connect(self.toggle_treeview)
 
         
         self.treeView.clicked.connect(self.add_region_from_tree)
 
         self.alpha_textbox.textChanged.connect(self.update_actor_properties)
         self.color_textbox.textChanged.connect(self.update_actor_properties)
+
+    # ------------------------------ Toggle treeview ----------------------------- #
+    def toggle_treeview(self):
+        if not self.treeView.isHidden():
+            self.buttons['show_structures_tree'].setText('Show structures tree')
+        else:
+            self.buttons['show_structures_tree'].setText('Hide structures tree')
+        
+        self.treeView.setHidden(not self.treeView.isHidden())
 
     # ---------------------------- Update actor props ---------------------------- #
     def update_actor_properties(self):

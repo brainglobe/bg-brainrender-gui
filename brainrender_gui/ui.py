@@ -168,6 +168,15 @@ class UI(QMainWindow):
         layout.addWidget(colorlabel)
         layout.addWidget(self.color_textbox)
 
+        # Add label
+        lbl = QLabel("Show structures tree")
+        lbl.setObjectName('LabelWithBorder')
+        layout.addWidget(lbl)
+
+        btn = QPushButton('Show structures tree', self)
+        self.buttons[btn.text().lower().replace(" ", "_")] = btn
+        layout.addWidget(btn)
+
         # set spacing
         layout.addStretch(5)
         layout.setSpacing(20)
@@ -195,6 +204,8 @@ class UI(QMainWindow):
         main_layout.addWidget(self.treeView)
         main_layout.addWidget(self.vtkWidget)
         main_layout.addWidget(right_navbar)
+
+        self.treeView.setHidden(True)
 
         # Make the brwidget wider
         main_layout.setStretch(0, 70)
