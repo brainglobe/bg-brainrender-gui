@@ -1,2 +1,5 @@
 brainrender
 pyqt5
+numpy
+qtpy
+napari
