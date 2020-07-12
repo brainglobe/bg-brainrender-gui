@@ -2,6 +2,9 @@ from qtpy.QtGui import QIcon
 
 
 def get_in_alist(qlist):
+    """
+        Gets items in the actor list
+    """
     items = []
     for index in range(qlist.count()):
         items.append(qlist.item(index).text())
@@ -9,6 +12,9 @@ def get_in_alist(qlist):
 
 
 def update_actors_list(qlist, actorsdict):
+    """
+        Adds missing entries in the actors list
+    """
     listed = get_in_alist(qlist)
 
     # Add items to list
@@ -21,6 +27,9 @@ def update_actors_list(qlist, actorsdict):
 
 
 def remove_from_list(qlist, aname):
+    """
+        Removes an entry from the actors list
+    """
     if aname not in get_in_alist(qlist):
         raise ValueError(
             f"Attempting to remove {aname} from list, but {aname} not in list."

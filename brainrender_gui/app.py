@@ -20,9 +20,16 @@ from brainrender_gui.style import palette
 class App(Scene, UI):
     actors = {}  # stores actors and status
 
-    def __init__(
-        self, *args, atlas=None, axes=None, random_colors=False, **kwargs
-    ):
+    def __init__(self, *args, atlas=None, axes=None, **kwargs):
+        """
+            Initialise the pyqt5 app and the brainrender scene. 
+
+            Arguments:
+            ----------
+
+            atlas: str/None. Name of the brainglobe atlas to use
+            axes: bool. If true axes are shown in the brainrender render
+        """
         self.scene = Scene(*args, atlas=atlas, **kwargs)
         UI.__init__(self, *args, **kwargs)
 
@@ -60,6 +67,11 @@ class App(Scene, UI):
 
     # ------------------------------ Toggle treeview ----------------------------- #
     def toggle_treeview(self):
+        """
+            Method for the show structures tree button.
+            It toggles the visibility of treeView widget
+            and adjusts the button's text accordingly.
+        """
         if not self.treeView.isHidden():
             self.buttons["show_structures_tree"].setText(
                 "Show structures tree"
@@ -73,6 +85,12 @@ class App(Scene, UI):
 
     # ---------------------------- Update actor props ---------------------------- #
     def update_actor_properties(self):
+        """
+            Called when the text boxes for showing/editing
+            the selected actor's alpha/color are edited.
+            This function checks that the values makes sense
+            and update the atuple of the selected actor.
+        """
         # Get currently selected actor
         aname = self.actors_list.currentItem().text()
         if aname not in self.actors.keys():
@@ -98,7 +116,6 @@ class App(Scene, UI):
             return
 
         # Update actor
-
         try:
             self.actors[aname] = self.atuple(
                 actor.mesh, actor.is_visible, color, alpha
@@ -110,10 +127,24 @@ class App(Scene, UI):
 
     # ---------------------------- Add/Update regions ---------------------------- #
     def open_regions_dialog(self):
+        """
+            Opens a QDialog window for inputting 
+            regions to add to the scene
+        """
         self.regions_dialog = AddRegionsWindow(self, self.palette)
 
     def add_regions(self, regions):
+        """
+            Called by AddRegionsWindow when it closes.
+            It adds brain regions to the scene
+        """
+        # Add brain regions
         self.scene.add_brain_regions(regions)
+
+        # Toggle treview entries
+        # TODO update treeview item corresponding to regions
+
+        # update
         self._update()
 
     def add_region_from_tree(self, val):
@@ -159,6 +190,9 @@ class App(Scene, UI):
     # ------------------------------- Add from file ------------------------------ #
 
     def open_file(self):
+        """
+            Pyqt5 dialog for selecting and loading files
+        """
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
         fname, _ = QFileDialog.getOpenFileName(
@@ -171,6 +205,16 @@ class App(Scene, UI):
         return fname
 
     def add_from_file(self, fun):
+        """
+            General function for selecting, loading
+            and adding to scene a file.
+
+            Arguments:
+            -----------
+
+            fun: function. One of Scene's methods used to add the file's
+                    content to the scene.
+        """
         fname = self.open_file()
         if not fname:
             return
@@ -179,19 +223,32 @@ class App(Scene, UI):
             self._update()
 
     def add_from_file_object(self):
+        """
+            Add to scene from .stl, .obj and .vtk files.
+            Method of the corresponding button
+        """
         self.add_from_file(self.scene.add_from_file)
 
     def add_from_file_sharptrack(self):
+        """
+            Add to scene from .m file with SHARPTRACK output
+            Method of the corresponding button
+        """
         self.add_from_file(self.scene.add_probe_from_sharptrack)
 
     def add_from_file_cells(self):
+        """
+            Add to scene from .h5 and .csv files with cell coordinates data.
+            Method of the corresponding button
+        """
         self.add_from_file(self.scene.add_cells_from_file)
 
     # -------------------------------- Actors list ------------------------------- #
     def actor_list_double_clicked(self, listitem):
         """
-            When an item in the actors list is clicked
+            When an item in the actors list is doube clicked
             it toggles the corresponding actor's visibility
+            and updates the list widget UI
         """
         # Get actor
         aname = self.actors_list.currentItem().text()
@@ -221,6 +278,11 @@ class App(Scene, UI):
         self._update()
 
     def actor_list_clicked(self, index):
+        """
+            When an item of the actors list is clicked
+            this function loads it's parameters and updates
+            the text in the alpha/color textboxes. 
+        """
         # Get actor
         aname = self.actors_list.currentItem().text()
         if aname not in self.actors.keys():
@@ -279,7 +341,7 @@ class App(Scene, UI):
         """
             All actors that are part of the scene are stored
             in a dictionary with key as the actor name and 
-            value as a 2-tuple with (Mesh, is_visible). 
+            value as a 4-tuple with (Mesh, is_visible, color, alpha). 
             `is_visible` is a bool that determines if the 
             actor should be rendered
         """

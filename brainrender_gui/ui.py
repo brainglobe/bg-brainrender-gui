@@ -32,6 +32,7 @@ class UI(QMainWindow):
     def __init__(self, theme="dark"):
         super().__init__()
 
+        # Get palette
         self.palette = palettes[theme]
         self.theme = theme
 
@@ -49,7 +50,10 @@ class UI(QMainWindow):
         self.setStyleSheet(update_css(style, self.palette))
 
     def get_icons(self):
-
+        """
+            Gets the correct path to the icons
+            depending on the theme chosen
+        """
         fld = Path(os.path.dirname(os.path.realpath(__file__)))
         self.palette["branch_closed_img"] = str(
             fld / "icons" / f"right_{self.theme}.svg"
@@ -125,6 +129,9 @@ class UI(QMainWindow):
         return treeView
 
     def make_right_navbar(self):
+        """
+            Creates the widgets in the right navbar.
+        """
         # make layout
         layout = QVBoxLayout()
 
@@ -190,9 +197,15 @@ class UI(QMainWindow):
         return widget
 
     def make_brwidget(self):
+        """
+            Creates vtkWidget for the vedo plotter
+        """
         self.vtkWidget = QVTKRenderWindowInteractor(self)
 
     def initUI(self):
+        """
+            Define UI elements of the app's main window
+        """
         # Create navbars
         self.treeView = self.make_left_navbar()
         right_navbar = self.make_right_navbar()
@@ -205,7 +218,6 @@ class UI(QMainWindow):
         main_layout.addWidget(self.treeView)
         main_layout.addWidget(self.vtkWidget)
         main_layout.addWidget(right_navbar)
-
         self.treeView.setHidden(True)
 
         # Make the brwidget wider

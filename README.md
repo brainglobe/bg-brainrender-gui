@@ -33,5 +33,5 @@ To do:
 
   * [x] actors list: add icon to show what kind of data
   * [x] actors list: single click -> actor edit, doble click toggle on/off
-  * [ ] turn structures tree into a widget that can be shown/hidden
-  * [ ] 
+  * [x] turn structures tree into a widget that can be shown/hidden
+

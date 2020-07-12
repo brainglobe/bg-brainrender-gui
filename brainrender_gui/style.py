@@ -135,6 +135,10 @@ QTreeView::indicator:unchecked {
 
 
 def update_css(css, palette):
+    """
+        Updates a CSS string with values
+        from the palette chosen.
+    """
     css = css.replace("FGCOLOR", palette["foreground"])
     css = css.replace("BGCOLOR", palette["background"])
     css = css.replace("TXTCOLOR", palette["text"])

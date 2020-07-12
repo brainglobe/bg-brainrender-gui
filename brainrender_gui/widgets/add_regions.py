@@ -14,6 +14,16 @@ class AddRegionsWindow(QDialog):
     )
 
     def __init__(self, main_window, palette):
+        """
+            Creates a new window for user to input
+            which regions to add to scene.
+
+            Arguments:
+            ----------
+
+            main_window: reference to the App's main window
+            palette: main_window's palette, used to style widgets
+        """
         super().__init__()
         self.setWindowTitle("Add brain regions")
         self.ui()
@@ -21,6 +31,9 @@ class AddRegionsWindow(QDialog):
         self.setStyleSheet(update_css(style, palette))
 
     def ui(self):
+        """
+            Define UI's elements
+        """
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         layout = QVBoxLayout()
@@ -45,6 +58,11 @@ class AddRegionsWindow(QDialog):
         self.show()
 
     def on_click(self):
+        """
+            On click or 'Enter' get the regions
+            from the input and call the add_regions
+            method of the main window
+        """
         regions = self.textbox.text().split(" ")
         self.main_window.add_regions(regions)
 

@@ -4,6 +4,9 @@ from brainrender_gui.app import App
 
 
 def launch():
+    """
+        Launches the application
+    """
     app = QApplication(sys.argv)
     ex = App()
     app.aboutToQuit.connect(ex.onClose)
