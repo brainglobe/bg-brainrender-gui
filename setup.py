@@ -28,7 +28,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "brainrender-gui = brainrender_gui.__init__:launch",
+            "brainrender-gui = brainrender_gui.__init__:clilaunch",
         ]
     },
     zip_safe=False,

@@ -295,7 +295,7 @@ class App(Scene, UI):
         if isinstance(actor.color, np.ndarray):
             color = "".join([str(c) + " " for c in actor.color]).rstrip()
         else:
-            color = color
+            color = actor.color
 
         self.color_textbox.setText(color)
 
@@ -331,7 +331,10 @@ class App(Scene, UI):
                 if "xtitle" in a.name or "xNumericLabel" in a.name:
                     a.RotateZ(180)
 
+            self.axes = ax
             self.scene.add_actor(ax)
+        else:
+            self.axes = None
 
         # Fix camera
         set_camera(self.scene, self.scene.camera)
@@ -349,10 +352,15 @@ class App(Scene, UI):
         for actor in self.scene.get_actors():
             if actor is None:
                 continue
-            if actor.name not in self.actors.keys():
-                self.actors[actor.name] = self.atuple(
-                    actor, True, actor.color(), actor.alpha()
-                )
+
+            try:
+                if actor.name not in self.actors.keys():
+                    self.actors[actor.name] = self.atuple(
+                        actor, True, actor.color(), actor.alpha()
+                    )
+            except AttributeError:
+                # the Assembly object representing the axes should be ignore
+                pass
 
     def _update(self):
         """
@@ -365,6 +373,10 @@ class App(Scene, UI):
 
         # Set actors look
         meshes = [act.mesh.c(act.color).alpha(act.alpha) for act in to_render]
+
+        # Add axes
+        if self.axes is not None:
+            meshes.append(self.axes)
 
         # update actors rendered
         self.scene.apply_render_style()

@@ -1,8 +1,10 @@
 **To - Do**
-- [ ] command line interface: `-a` and `-axes` options
+- [x] command line interface: `-a` and `-axes` options
 - [ ] add brain regions window: options for color and alpha 
 - [ ] add cells, from file -> options for color and alpha
-
+- [ ] more extensive tests.
+- [ ] BUG: pip install followed by command line results in structures tree icons not loading:
+> WARNING: Cannot open file '/Users/federicoclaudi/miniconda3/lib/python3.7/site-packages/brainrender_gui/icons/down_dark.svg', because: No such file or directory
 
  bg-brainrender-gui
 `bg-brainrender-gui` is a `pyqt5` based GUI built around [`brainrender`](https://github.com/BrancoLab/BrainRender).
@@ -49,8 +51,7 @@ Once an actor is selected from the `Actors` list, its color and alpha will appea
 Pressing the `Show structures tree` button at the bottom right of the window shows a panel with the hierarchy view of brain regions in the selected atlas:
 ![](screenshots/app2.png)
 
-The hierarchy view can be used to explore the structures hierarchy as well as to add brain regions to the scene: clicking on a region's tickbox will add it to the list of actors in the scene. Click
-
+The hierarchy view can be used to explore the structures hierarchy as well as to add brain regions to the scene: clicking on a region's tickbox will add it to the list of actors in the scene. 
 Press the same button again to hide the treeview.
 
 # Getting in touch
