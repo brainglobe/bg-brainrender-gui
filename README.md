@@ -1,7 +1,7 @@
 **To - Do**
 - [x] command line interface: `-a` and `-axes` options
 - [x] add brain regions window: options for color and alpha 
-- [ ] add cells, from file -> options for color and alpha
+- [x] add cells, from file -> options for color and alpha
 - [ ] more extensive tests.
 - [ ] BUG: pip install followed by command line results in structures tree icons not loading:
 > WARNING: Cannot open file '/Users/federicoclaudi/miniconda3/lib/python3.7/site-packages/brainrender_gui/icons/down_dark.svg', because: No such file or directory

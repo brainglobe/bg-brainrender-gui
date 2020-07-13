@@ -16,6 +16,7 @@ from brainrender_gui.widgets.actors_list import (
 from brainrender_gui.widgets.add_regions import AddRegionsWindow
 from brainrender_gui.style import palette
 from brainrender_gui.utils import get_color_from_string, get_alpha_from_string
+from brainrender_gui.widgets.add_from_file import AddFromFileWindow
 
 
 class App(Scene, UI):
@@ -232,7 +233,24 @@ class App(Scene, UI):
         if not fname:
             return
         else:
-            fun(fname)
+            # Get actor color and alpha
+            dialog = AddFromFileWindow(self, self.palette)
+            dialog.exec()
+
+            alpha = get_alpha_from_string(dialog.alpha_textbox.text())
+            color = get_color_from_string(dialog.color_textbox.text())
+
+            # Add actor
+            act = fun(fname)
+
+            # Edit actor
+            if color != "default":
+                act.c(color)
+
+            if alpha is not None:
+                act.alpha(alpha)
+
+            # Update
             self._update()
 
     def add_from_file_object(self):
