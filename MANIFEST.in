@@ -1,0 +1,2 @@
+global-include *.svg
+include brainrender_gui/icons/*

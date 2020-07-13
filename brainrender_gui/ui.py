@@ -55,6 +55,7 @@ class UI(QMainWindow):
             depending on the theme chosen
         """
         fld = Path(os.path.dirname(os.path.realpath(__file__)))
+
         self.palette["branch_closed_img"] = str(
             fld / "icons" / f"right_{self.theme}.svg"
         ).replace("\\", "/")

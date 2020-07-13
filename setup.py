@@ -5,11 +5,13 @@ with open("requirements.txt") as f:
 
 setup(
     name="bg-brainrender-gui",
-    version="0.0.1rc0",
+    version="0.0.2",
     description="Visualisation and exploration of brain atlases and other anatomical data",
     install_requires=requirements,
     python_requires=">=3.6, <3.8",
-    packages=find_namespace_packages(exclude=("docs", "tests*")),
+    packages=find_namespace_packages(
+        exclude=("docs", "tests*", "brainrender_gui/__pycache__")
+    ),
     include_package_data=True,
     url="https://github.com/brainglobe/bg-brainrender-gui",
     author="Adam Tyson, Luigi Petrucco, Federico Claudi",

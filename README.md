@@ -3,8 +3,8 @@
 - [x] add brain regions window: options for color and alpha 
 - [x] add cells, from file -> options for color and alpha
 - [ ] more extensive tests.
-- [ ] BUG: pip install followed by command line results in structures tree icons not loading:
-> WARNING: Cannot open file '/Users/federicoclaudi/miniconda3/lib/python3.7/site-packages/brainrender_gui/icons/down_dark.svg', because: No such file or directory
+- [x] BUG: pip install followed by command line results in structures tree icons not loading:
+- [ ] more extensive docs
 
  bg-brainrender-gui
 `bg-brainrender-gui` is a `pyqt5` based GUI built around [`brainrender`](https://github.com/BrancoLab/BrainRender).
@@ -14,7 +14,10 @@ The goal of this program is to provide an easy to use graphical interface for `b
 Currently `bg-brainrender-gui` only supports some of `brainrender`'s core functionality, but we are happy to extend `bg-brainrender-gui` should there be interest in this. 
 
 ## Installation
-Once the software will be released, it can be installed as a pithon package with `pip`.
+`bg-brainrender-gui` can be installed as a pithon package with `pip`:
+```
+     pip isnstall bg-brainrender-gui
+```
 
 
 ## Usage
