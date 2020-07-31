@@ -15,7 +15,11 @@ from brainrender_gui.widgets.actors_list import (
 )
 from brainrender_gui.widgets.add_regions import AddRegionsWindow
 from brainrender_gui.style import palette
-from brainrender_gui.utils import get_color_from_string, get_alpha_from_string
+from brainrender_gui.utils import (
+    get_color_from_string,
+    get_alpha_from_string,
+    get_region_actors,
+)
 from brainrender_gui.widgets.add_from_file import AddFromFileWindow
 
 
@@ -191,12 +195,13 @@ class App(Scene, UI):
             item._checked = False
 
         # Add/remove mesh
-        if region not in self.scene.actors["regions"].keys():
+        if get_region_actors(self.scene.actors, region) is None:
             # Add region
             self.scene.add_brain_regions(region,)
         else:
             # remove regiona and update list
-            del self.scene.actors["regions"][region]
+            act = get_region_actors(self.scene.actors, region)
+            del act
             del self.actors[region]
             remove_from_list(self.actors_list, region)
 
@@ -380,7 +385,7 @@ class App(Scene, UI):
             actor should be rendered
         """
 
-        for actor in self.scene.get_actors():
+        for actor in self.scene.actors:
             if actor is None:
                 continue
 

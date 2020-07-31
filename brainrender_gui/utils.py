@@ -1,6 +1,15 @@
 import numpy as np
 
 
+def get_region_actors(actors, region):
+    acts = [act for act in actors if act.name == region]
+
+    if acts:
+        return acts[0]
+    else:
+        return None
+
+
 def get_color_from_string(string):
     try:
         rgb = string.replace("[", "").replace("]", "")
