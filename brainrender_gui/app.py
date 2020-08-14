@@ -7,6 +7,8 @@ from qtpy.QtWidgets import QFileDialog
 from qtpy.QtGui import QColor, QIcon
 from PyQt5.Qt import Qt
 import numpy as np
+from pathlib import Path
+from pkg_resources import resource_filename
 
 from brainrender_gui.ui import UI
 from brainrender_gui.widgets.actors_list import (
@@ -213,7 +215,7 @@ class App(Scene, UI):
 
     # ------------------------------- Add from file ------------------------------ #
 
-    def add_from_file(self, fun):
+    def add_from_file(self, fun, name_from_file=True):
         """
             General function for selecting, loading
             and adding to scene a file.
@@ -223,6 +225,7 @@ class App(Scene, UI):
 
             fun: function. One of Scene's methods used to add the file's
                     content to the scene.
+            name_from_file: bool, optional. If True the actor's name is the name of the files loaded
         """
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
@@ -247,13 +250,19 @@ class App(Scene, UI):
 
             # Add actor
             act = fun(fname)
+            if not isinstance(act, (tuple, list)):
+                act = [act]
 
             # Edit actor
-            if color != "default":
-                act.c(color)
+            for actor in act:
+                if name_from_file:
+                    actor.name = Path(fname).name
 
-            if alpha is not None:
-                act.alpha(alpha)
+                if color != "default":
+                    actor.c(color)
+
+                if alpha is not None:
+                    actor.alpha(alpha)
 
             # Update
             self._update()
@@ -301,10 +310,12 @@ class App(Scene, UI):
         # Toggle list item UI
         if self.actors[aname].is_visible:
             txt = palette["text"]
-            icon = QIcon("brainrender_gui/icons/eye.svg")
+            icon = QIcon(resource_filename("brainrender_gui", "icons/eye.svg"))
         else:
             txt = palette["primary"]
-            icon = QIcon("brainrender_gui/icons/eye-slash.svg")
+            icon = QIcon(
+                resource_filename("brainrender_gui", "icons/eye-slash.svg")
+            )
         rgb = txt.replace(")", "").replace(" ", "").split("(")[-1].split(",")
 
         listitem.setForeground(QColor(*[int(r) for r in rgb]))

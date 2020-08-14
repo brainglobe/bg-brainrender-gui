@@ -10,6 +10,7 @@ from qtpy.QtWidgets import (
     QTreeView,
 )
 from PyQt5.Qt import QStandardItemModel
+from pkg_resources import resource_filename
 
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from napari.utils.theme import palettes
@@ -56,21 +57,18 @@ class UI(QMainWindow):
         """
         fld = Path(os.path.dirname(os.path.realpath(__file__)))
 
-        self.palette["branch_closed_img"] = str(
-            fld / "icons" / f"right_{self.theme}.svg"
-        ).replace("\\", "/")
-
-        self.palette["branch_opened_img"] = str(
-            fld / "icons" / f"down_{self.theme}.svg"
-        ).replace("\\", "/")
-
-        self.palette["checked_img"] = str(
-            fld / "icons" / f"checkedbox_{self.theme}.svg"
-        ).replace("\\", "/")
-
-        self.palette["unchecked_img"] = str(
-            fld / "icons" / f"box_{self.theme}.svg"
-        ).replace("\\", "/")
+        self.palette["branch_closed_img"] = resource_filename(
+            "brainrender_gui", f"icons/right_{self.theme}.svg"
+        )
+        self.palette["branch_opened_img"] = resource_filename(
+            "brainrender_gui", f"icons/down_{self.theme}.svg"
+        )
+        self.palette["checked_img"] = resource_filename(
+            "brainrender_gui", f"icons/checkedbox_{self.theme}.svg"
+        )
+        self.palette["unchecked_img"] = resource_filename(
+            "brainrender_gui", f"icons/box_{self.theme}.svg"
+        )
 
     def make_left_navbar(self):
         """
