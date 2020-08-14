@@ -5,7 +5,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="bg-brainrender-gui",
-    version="0.0.4",
+    version="0.0.5",
     description="Visualisation and exploration of brain atlases and other anatomical data",
     install_requires=requirements,
     python_requires=">=3.6, <3.8",
