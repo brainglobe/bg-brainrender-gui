@@ -15,6 +15,8 @@ from brainrender_gui.widgets.actors_list import (
     update_actors_list,
     remove_from_list,
 )
+from brainrender_gui.widgets.screenshot_modal import ScreenshotModal
+
 from brainrender_gui.widgets.add_regions import AddRegionsWindow
 from brainrender_gui.style import palette
 from brainrender_gui.utils import (
@@ -27,6 +29,8 @@ from brainrender_gui.widgets.add_from_file import AddFromFileWindow
 
 class App(Scene, UI):
     actors = {}  # stores actors and status
+
+    camera_orientation = None  # used to manually set camera orientation
 
     def __init__(self, *args, atlas=None, axes=None, **kwargs):
         """
@@ -68,10 +72,37 @@ class App(Scene, UI):
             self.toggle_treeview
         )
 
+        self.buttons["take_screenshot"].clicked.connect(self.take_screenshot)
+        self.buttons["top"].clicked.connect(self.move_camera_top)
+        self.buttons["side"].clicked.connect(self.move_camera_side)
+        self.buttons["front"].clicked.connect(self.move_camera_front)
+
         self.treeView.clicked.connect(self.add_region_from_tree)
 
         self.alpha_textbox.textChanged.connect(self.update_actor_properties)
         self.color_textbox.textChanged.connect(self.update_actor_properties)
+
+    # ------------------------- Canvas buttons callbacks ------------------------- #
+    def take_screenshot(self):
+        self._update()
+        self.scene.is_rendered = True
+        self.scene.take_screenshot()
+
+        # show success message
+        dialog = ScreenshotModal(self, self.palette)
+        dialog.exec()
+
+    def move_camera_front(self):
+        self.camera_orientation = "coronal"  # specify brainrender camera
+        self._update()
+
+    def move_camera_top(self):
+        self.camera_orientation = "top"  # specify brainrender camera
+        self._update()
+
+    def move_camera_side(self):
+        self.camera_orientation = "sagittal"  # specify brainrender camera
+        self._update()
 
     # ------------------------------ Toggle treeview ----------------------------- #
     def toggle_treeview(self):
@@ -414,6 +445,12 @@ class App(Scene, UI):
             Updates the scene's Plotter to add/remove
             meshes
         """
+        self.scene.apply_render_style()
+
+        if self.camera_orientation is not None:
+            set_camera(self.scene, self.camera_orientation)
+            self.camera_orientation = None
+
         # Get actors to render
         self._update_actors()
         to_render = [act for act in self.actors.values() if act.is_visible]
@@ -426,7 +463,6 @@ class App(Scene, UI):
             meshes.append(self.axes)
 
         # update actors rendered
-        self.scene.apply_render_style()
         self.scene.plotter.show(
             *meshes, interactorStyle=0, bg=brainrender.BACKGROUND_COLOR,
         )

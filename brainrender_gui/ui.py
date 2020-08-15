@@ -11,6 +11,7 @@ from qtpy.QtWidgets import (
     QSplitter,
 )
 from qtpy.QtCore import Qt
+from qtpy import QtGui
 from PyQt5.Qt import QStandardItemModel
 
 from pkg_resources import resource_filename
@@ -33,15 +34,27 @@ class UI(QMainWindow):
         "add sharptrack",
     ]
 
-    def __init__(self, theme="dark"):
+    central_column_button_names = [
+        "take screenshot",
+        "top",
+        "side",
+        "front",
+    ]
+
+    def __init__(self, theme="dark", **kwargs):
         super().__init__()
 
         # Get palette
         self.palette = palettes[theme]
         self.theme = theme
 
-        # set the title of main window
+        # set the title and icon of main window
         self.setWindowTitle("BRAINGLOBE - brainrender GUI")
+
+        logo_path = resource_filename(
+            "brainrender_gui", f"icons/BG_logo_mini.svg"
+        )
+        self.setWindowIcon(QtGui.QIcon(logo_path))
 
         # set the size of window
         self.Width = 3000
@@ -198,11 +211,38 @@ class UI(QMainWindow):
 
         return widget
 
-    def make_brwidget(self):
+    def make_central_column(self):
         """
-            Creates vtkWidget for the vedo plotter
+            Creates vtkWidget for the vedo plotter and a few
+            useful buttons, for the central part of the GUI
         """
+        # make a vtk widget for the vedo plotter
         self.vtkWidget = QVTKRenderWindowInteractor(self)
+
+        # Create layout, add canvas and buttons
+        layout = QVBoxLayout()
+        layout.addWidget(self.vtkWidget)
+
+        # Make buttons
+        hlayout = QHBoxLayout()
+        for bname in self.central_column_button_names:
+            btn = QPushButton(bname.capitalize(), self)
+            btn.setObjectName(bname.replace(" ", "_"))
+            self.buttons[bname.replace(" ", "_")] = btn
+            hlayout.addWidget(btn)
+
+        widget = QWidget()
+        widget.setObjectName("CentralColumn_buttons")
+        widget.setLayout(hlayout)
+
+        layout.addWidget(widget)
+
+        # make widget
+        widget = QWidget()
+        widget.setObjectName("CentralColumn")
+        widget.setLayout(layout)
+
+        return widget
 
     def initUI(self):
         """
@@ -210,18 +250,14 @@ class UI(QMainWindow):
         """
         # Create navbars
         self.treeView = self.make_left_navbar()
-        right_navbar = self.make_right_navbar()
-
-        # Create brainrender widget
-        self.make_brwidget()
 
         # Make overall layout
         main_layout = QHBoxLayout()
 
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(self.treeView)
-        splitter.addWidget(self.vtkWidget)
-        splitter.addWidget(right_navbar)
+        splitter.addWidget(self.make_central_column())
+        splitter.addWidget(self.make_right_navbar())
 
         splitter.setSizes([200, 700, 10])
         main_layout.addWidget(splitter)

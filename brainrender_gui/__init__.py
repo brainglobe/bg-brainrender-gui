@@ -4,12 +4,18 @@ from brainrender_gui.app import App
 import click
 
 
-def launch(*args, **kwargs):
+def launch(*args, output=None, **kwargs):
     """
         Launches the application
     """
+    if output is None:
+        screenshot_kwargs = {}
+    else:
+        screenshot_kwargs = dict(folder=output)
+
     app = QApplication(sys.argv)
-    ex = App(*args, **kwargs)
+    app.setApplicationName("Brainrender GUIs")
+    ex = App(*args, screenshot_kwargs=screenshot_kwargs, **kwargs)
     app.aboutToQuit.connect(ex.onClose)
     ex.show()
     sys.exit(app.exec_())
@@ -18,9 +24,16 @@ def launch(*args, **kwargs):
 @click.command()
 @click.option("-x", "--axes", is_flag=True, default=False)
 @click.option("-a", "--atlas", default=None)
-def clilaunch(atlas=None, axes=False):
+@click.option("-o", "--output", default=None)
+def clilaunch(atlas=None, axes=False, output=None):
+    if output is None:
+        screenshot_kwargs = {}
+    else:
+        screenshot_kwargs = dict(folder=output)
+
     app = QApplication(sys.argv)
-    ex = App(atlas=atlas, axes=axes)
+    app.setApplicationName("Brainrender GUIs")
+    ex = App(atlas=atlas, axes=axes, screenshot_kwargs=screenshot_kwargs)
     app.aboutToQuit.connect(ex.onClose)
     ex.show()
     sys.exit(app.exec_())
