@@ -8,8 +8,11 @@ from qtpy.QtWidgets import (
     QHBoxLayout,
     QLineEdit,
     QTreeView,
+    QSplitter,
 )
+from qtpy.QtCore import Qt
 from PyQt5.Qt import QStandardItemModel
+
 from pkg_resources import resource_filename
 
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
@@ -23,7 +26,7 @@ from brainrender_gui.widgets.tree import StandardItem
 class UI(QMainWindow):
     buttons = {}
 
-    left_navbar_button_names = [
+    right_navbar_button_names = [
         "add brain regions",
         "add cells",
         "add from file",
@@ -138,7 +141,7 @@ class UI(QMainWindow):
         layout.addWidget(QLabel("Add actors"))
 
         # Add buttons
-        for bname in self.left_navbar_button_names:
+        for bname in self.right_navbar_button_names:
             btn = QPushButton(bname.capitalize(), self)
             btn.setObjectName(bname.replace(" ", "_"))
             self.buttons[bname.replace(" ", "_")] = btn
@@ -214,15 +217,16 @@ class UI(QMainWindow):
 
         # Make overall layout
         main_layout = QHBoxLayout()
-        main_layout.addWidget(self.treeView)
-        main_layout.addWidget(self.vtkWidget)
-        main_layout.addWidget(right_navbar)
-        self.treeView.setHidden(True)
 
-        # Make the brwidget wider
-        main_layout.setStretch(0, 70)
-        main_layout.setStretch(1, 200)
-        main_layout.setStretch(2, 70)
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.addWidget(self.treeView)
+        splitter.addWidget(self.vtkWidget)
+        splitter.addWidget(right_navbar)
+
+        splitter.setSizes([200, 700, 10])
+        main_layout.addWidget(splitter)
+
+        self.treeView.setHidden(True)
 
         # Create main window widget
         main_widget = QWidget()
