@@ -36,8 +36,10 @@ class UI(QMainWindow):
 
     central_column_button_names = [
         "take screenshot",
+        "reset",
         "top",
-        "side",
+        "side1",
+        "side2",
         "front",
     ]
 
@@ -224,12 +226,27 @@ class UI(QMainWindow):
         layout.addWidget(self.vtkWidget)
 
         # Make buttons
-        hlayout = QHBoxLayout()
-        for bname in self.central_column_button_names:
+        boxes = [QHBoxLayout(), QHBoxLayout()]
+        for n, bname in enumerate(self.central_column_button_names):
             btn = QPushButton(bname.capitalize(), self)
             btn.setObjectName(bname.replace(" ", "_"))
             self.buttons[bname.replace(" ", "_")] = btn
-            hlayout.addWidget(btn)
+
+            if n == 0:
+                boxes[0].addWidget(btn)
+            else:
+                boxes[1].addWidget(btn)
+
+        hlayout = QHBoxLayout()
+
+        widget = QWidget()
+        widget.setLayout(boxes[0])
+        widget.setObjectName("ScreenshotButtonLayout")
+        hlayout.addWidget(widget)
+
+        widget = QWidget()
+        widget.setLayout(boxes[1])
+        hlayout.addWidget(widget)
 
         widget = QWidget()
         widget.setObjectName("CentralColumn_buttons")

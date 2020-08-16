@@ -32,7 +32,16 @@ QWidget#MainWidget {
     padding: 48px;
 }
 
+QWidget#ScreenshotButtonLayout{
+    border-right: 2px solid TXTCOLOR;
+    max-width: 350px;
+}
 
+
+QVTKRenderWindowInteractor{
+    border-radius: 12px;
+    width: 200px;
+}
 
 QPushButton { 
     background-color: FGCOLOR;
@@ -41,12 +50,12 @@ QPushButton {
     padding: 6px;
     font-size: 14pt;
     margin: 4px 34px;
+    min-width: 50px;
 
 }
 QPushButton:hover {
     border: 1px solid TXTCOLOR;
 }
-
 
 
 QLabel {

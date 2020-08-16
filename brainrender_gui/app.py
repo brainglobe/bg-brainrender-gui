@@ -3,33 +3,21 @@ from brainrender.scene import Scene
 from brainrender.Utils.camera import set_camera
 from vedo import Plotter, addons
 from collections import namedtuple
-from qtpy.QtWidgets import QFileDialog
-from qtpy.QtGui import QColor, QIcon
-from PyQt5.Qt import Qt
-import numpy as np
-from pathlib import Path
-from pkg_resources import resource_filename
 
 from brainrender_gui.ui import UI
-from brainrender_gui.widgets.actors_list import (
-    update_actors_list,
-    remove_from_list,
-)
+from brainrender_gui.apputils.camera_control import CameraControl
+from brainrender_gui.apputils.add_from_file_control import AddFromFile
+from brainrender_gui.apputils.regions_control import RegionsControl
+from brainrender_gui.apputils.actors_control import ActorsControl
+
+from brainrender_gui.widgets.actors_list import update_actors_list
 from brainrender_gui.widgets.screenshot_modal import ScreenshotModal
 
-from brainrender_gui.widgets.add_regions import AddRegionsWindow
-from brainrender_gui.style import palette
-from brainrender_gui.utils import (
-    get_color_from_string,
-    get_alpha_from_string,
-    get_region_actors,
-)
-from brainrender_gui.widgets.add_from_file import AddFromFileWindow
 
-
-class App(Scene, UI):
+class App(
+    Scene, UI, CameraControl, AddFromFile, RegionsControl, ActorsControl
+):
     actors = {}  # stores actors and status
-
     camera_orientation = None  # used to manually set camera orientation
 
     def __init__(self, *args, atlas=None, axes=None, **kwargs):
@@ -42,8 +30,13 @@ class App(Scene, UI):
             atlas: str/None. Name of the brainglobe atlas to use
             axes: bool. If true axes are shown in the brainrender render
         """
+        # Initialize parent classes
         self.scene = Scene(*args, atlas=atlas, **kwargs)
         UI.__init__(self, *args, **kwargs)
+        CameraControl.__init__(self)
+        AddFromFile.__init__(self)
+        RegionsControl.__init__(self)
+        ActorsControl.__init__(self)
 
         # Setup brainrender plotter
         self.axes = axes
@@ -58,51 +51,38 @@ class App(Scene, UI):
             self.actor_list_double_clicked
         )
         self.actors_list.clicked.connect(self.actor_list_clicked)
-        self.buttons["add_brain_regions"].clicked.connect(
-            self.open_regions_dialog
-        )
-        self.buttons["add_from_file"].clicked.connect(
-            self.add_from_file_object
-        )
-        self.buttons["add_cells"].clicked.connect(self.add_from_file_cells)
-        self.buttons["add_sharptrack"].clicked.connect(
-            self.add_from_file_sharptrack
-        )
-        self.buttons["show_structures_tree"].clicked.connect(
-            self.toggle_treeview
+
+        buttons_funcs = dict(
+            add_brain_regions=self.open_regions_dialog,
+            add_from_file=self.add_from_file_object,
+            add_cells=self.add_from_file_cells,
+            add_sharptrack=self.add_from_file_sharptrack,
+            show_structures_tree=self.toggle_treeview,
+            take_screenshot=self.take_screenshot,
+            reset=self.reset_camera,
+            top=self.move_camera_top,
+            side1=self.move_camera_side1,
+            side2=self.move_camera_side2,
+            front=self.move_camera_front,
         )
 
-        self.buttons["take_screenshot"].clicked.connect(self.take_screenshot)
-        self.buttons["top"].clicked.connect(self.move_camera_top)
-        self.buttons["side"].clicked.connect(self.move_camera_side)
-        self.buttons["front"].clicked.connect(self.move_camera_front)
+        for btn, fun in buttons_funcs.items():
+            self.buttons[btn].clicked.connect(fun)
 
         self.treeView.clicked.connect(self.add_region_from_tree)
 
         self.alpha_textbox.textChanged.connect(self.update_actor_properties)
         self.color_textbox.textChanged.connect(self.update_actor_properties)
 
-    # ------------------------- Canvas buttons callbacks ------------------------- #
     def take_screenshot(self):
-        self._update()
-        self.scene.is_rendered = True
+        actors = self._update()
+
+        self.scene.render(interactive=False)
         self.scene.take_screenshot()
 
         # show success message
         dialog = ScreenshotModal(self, self.palette)
         dialog.exec()
-
-    def move_camera_front(self):
-        self.camera_orientation = "coronal"  # specify brainrender camera
-        self._update()
-
-    def move_camera_top(self):
-        self.camera_orientation = "top"  # specify brainrender camera
-        self._update()
-
-    def move_camera_side(self):
-        self.camera_orientation = "sagittal"  # specify brainrender camera
-        self._update()
 
     # ------------------------------ Toggle treeview ----------------------------- #
     def toggle_treeview(self):
@@ -121,261 +101,6 @@ class App(Scene, UI):
             )
 
         self.treeView.setHidden(not self.treeView.isHidden())
-
-    # ---------------------------- Update actor props ---------------------------- #
-    def update_actor_properties(self):
-        """
-            Called when the text boxes for showing/editing
-            the selected actor's alpha/color are edited.
-            This function checks that the values makes sense
-            and update the atuple of the selected actor.
-        """
-        # Get currently selected actor
-        aname = self.actors_list.currentItem().text()
-        if aname not in self.actors.keys():
-            raise ValueError(f"Actor {aname} not in the actors record")
-        else:
-            actor = self.actors[aname]
-
-        # Get color
-        if not self.color_textbox.text():
-            return
-        color = get_color_from_string(self.color_textbox.text())
-
-        # Get alpha
-        alpha = get_alpha_from_string(self.alpha_textbox.text())
-        if alpha is None:
-            return
-
-        # Update actor
-        try:
-            self.actors[aname] = self.atuple(
-                actor.mesh, actor.is_visible, color, alpha
-            )
-            self._update()
-        except IndexError:  # likely something went wrong with getting of color
-            self.actors[aname] = actor
-            return
-
-    # ---------------------------- Add/Update regions ---------------------------- #
-    def open_regions_dialog(self):
-        """
-            Opens a QDialog window for inputting 
-            regions to add to the scene
-        """
-        self.regions_dialog = AddRegionsWindow(self, self.palette)
-
-    def add_regions(self, regions, alpha, color):
-        """
-            Called by AddRegionsWindow when it closes.
-            It adds brain regions to the scene
-
-            Arguments:
-            ----------
-            regions: list of strings with regions acronyms
-            alpha: str, meshes transparency
-            color: str, meshes color. If 'atlas' the default colors are used
-        """
-        # Get params
-        alpha = get_alpha_from_string(alpha)
-        if alpha is None:
-            alpha = brainrender.DEFAULT_MESH_ALPHA
-
-        color = get_color_from_string(color)
-        if color == "atlas":
-            use_original = True
-            colors = None
-        else:
-            use_original = False
-            colors = color
-
-        # Add brain regions
-        self.scene.add_brain_regions(
-            regions,
-            alpha=alpha,
-            use_original_color=use_original,
-            colors=colors,
-        )
-
-        # Toggle treview entries
-        # TODO update treeview item corresponding to regions
-
-        # update
-        self._update()
-
-    def add_region_from_tree(self, val):
-        """
-            When an item on the hierarchy tree is double clicked, the
-            corresponding mesh is added/removed from the brainrender scene
-        """
-        # Get item
-        idxs = self.treeView.selectedIndexes()
-        if idxs:
-            item = idxs[0]
-        else:
-            return
-        item = item.model().itemFromIndex(val)
-
-        # Get region name
-        region = item.tag
-
-        # Toggle checkbox
-        if not item._checked:
-            item.setCheckState(Qt.Checked)
-            item._checked = True
-        else:
-            item.setCheckState(Qt.Unchecked)
-            item._checked = False
-
-        # Add/remove mesh
-        if get_region_actors(self.scene.actors, region) is None:
-            # Add region
-            self.scene.add_brain_regions(region,)
-        else:
-            # remove regiona and update list
-            act = get_region_actors(self.scene.actors, region)
-            del act
-            del self.actors[region]
-            remove_from_list(self.actors_list, region)
-
-        # Update hierarchy's item font
-        item.toggle_active()
-
-        # Update brainrender scene
-        self._update()
-
-    # ------------------------------- Add from file ------------------------------ #
-
-    def add_from_file(self, fun, name_from_file=True):
-        """
-            General function for selecting, loading
-            and adding to scene a file.
-
-            Arguments:
-            -----------
-
-            fun: function. One of Scene's methods used to add the file's
-                    content to the scene.
-            name_from_file: bool, optional. If True the actor's name is the name of the files loaded
-        """
-        options = QFileDialog.Options()
-        # options |= QFileDialog.DontUseNativeDialog
-
-        fname, _ = QFileDialog.getOpenFileName(
-            self,
-            "QFileDialog.getOpenFileName()",
-            "",
-            "All Files (*)",
-            options=options,
-        )
-
-        if not fname:
-            return
-        else:
-            # Get actor color and alpha
-            dialog = AddFromFileWindow(self, self.palette)
-            dialog.exec()
-
-            alpha = get_alpha_from_string(dialog.alpha_textbox.text())
-            color = get_color_from_string(dialog.color_textbox.text())
-
-            # Add actor
-            act = fun(fname)
-            if not isinstance(act, (tuple, list)):
-                act = [act]
-
-            # Edit actor
-            for actor in act:
-                if name_from_file:
-                    actor.name = Path(fname).name
-
-                if color != "default":
-                    actor.c(color)
-
-                if alpha is not None:
-                    actor.alpha(alpha)
-
-            # Update
-            self._update()
-
-    def add_from_file_object(self):
-        """
-            Add to scene from .stl, .obj and .vtk files.
-            Method of the corresponding button
-        """
-        self.add_from_file(self.scene.add_from_file)
-
-    def add_from_file_sharptrack(self):
-        """
-            Add to scene from .m file with SHARPTRACK output
-            Method of the corresponding button
-        """
-        self.add_from_file(self.scene.add_probe_from_sharptrack)
-
-    def add_from_file_cells(self):
-        """
-            Add to scene from .h5 and .csv files with cell coordinates data.
-            Method of the corresponding button
-        """
-        self.add_from_file(self.scene.add_cells_from_file)
-
-    # -------------------------------- Actors list ------------------------------- #
-    def actor_list_double_clicked(self, listitem):
-        """
-            When an item in the actors list is doube clicked
-            it toggles the corresponding actor's visibility
-            and updates the list widget UI
-        """
-        # Get actor
-        aname = self.actors_list.currentItem().text()
-        if aname not in self.actors.keys():
-            raise ValueError(f"Actor {aname} not in the actors record")
-        else:
-            actor = self.actors[aname]
-
-        # Toggle visibility
-        self.actors[aname] = self.atuple(
-            actor.mesh, not actor.is_visible, actor.color, actor.alpha
-        )
-
-        # Toggle list item UI
-        if self.actors[aname].is_visible:
-            txt = palette["text"]
-            icon = QIcon(resource_filename("brainrender_gui", "icons/eye.svg"))
-        else:
-            txt = palette["primary"]
-            icon = QIcon(
-                resource_filename("brainrender_gui", "icons/eye-slash.svg")
-            )
-        rgb = txt.replace(")", "").replace(" ", "").split("(")[-1].split(",")
-
-        listitem.setForeground(QColor(*[int(r) for r in rgb]))
-        listitem.setIcon(icon)
-
-        # update
-        self._update()
-
-    def actor_list_clicked(self, index):
-        """
-            When an item of the actors list is clicked
-            this function loads it's parameters and updates
-            the text in the alpha/color textboxes. 
-        """
-        # Get actor
-        aname = self.actors_list.currentItem().text()
-        if aname not in self.actors.keys():
-            raise ValueError(f"Actor {aname} not in the actors record")
-        else:
-            actor = self.actors[aname]
-
-        self.alpha_textbox.setText(str(actor.alpha))
-
-        if isinstance(actor.color, np.ndarray):
-            color = "".join([str(c) + " " for c in actor.color]).rstrip()
-        else:
-            color = actor.color
-
-        self.color_textbox.setText(color)
 
     # ------------------------------- Initial setup ------------------------------ #
     def setup_plotter(self):
@@ -473,6 +198,8 @@ class App(Scene, UI):
 
         # Update list widget
         update_actors_list(self.actors_list, self.actors)
+
+        return meshes
 
     # ----------------------------------- Close ---------------------------------- #
     def onClose(self):
