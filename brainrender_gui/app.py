@@ -3,6 +3,7 @@ from brainrender.scene import Scene
 from brainrender.Utils.camera import set_camera
 from vedo import Plotter, addons
 from collections import namedtuple
+import datetime
 
 from brainrender_gui.ui import UI
 from brainrender_gui.apputils.camera_control import CameraControl
@@ -76,9 +77,19 @@ class App(
 
     def take_screenshot(self):
         actors = self._update()
+        self.scene.plotter.render()
 
-        self.scene.render(interactive=False)
-        self.scene.take_screenshot()
+        # Get savename
+        self.scene.screenshots_folder.mkdir(exist_ok=True)
+
+        savename = str(
+            self.scene.screenshots_folder / self.scene.screenshots_name
+        )
+        savename += (
+            f'_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}' + ".png"
+        )
+        print(f"\nSaving screenshot at {savename}\n")
+        self.scene.plotter.screenshot(savename)
 
         # show success message
         dialog = ScreenshotModal(self, self.palette)

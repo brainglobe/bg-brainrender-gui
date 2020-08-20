@@ -9,6 +9,7 @@ from qtpy.QtWidgets import (
     QLineEdit,
     QTreeView,
     QSplitter,
+    QFrame,
 )
 from qtpy.QtCore import Qt
 from qtpy import QtGui
@@ -219,7 +220,8 @@ class UI(QMainWindow):
             useful buttons, for the central part of the GUI
         """
         # make a vtk widget for the vedo plotter
-        self.vtkWidget = QVTKRenderWindowInteractor(self)
+        frame = QFrame()
+        self.vtkWidget = QVTKRenderWindowInteractor(frame)
 
         # Create layout, add canvas and buttons
         layout = QVBoxLayout()
