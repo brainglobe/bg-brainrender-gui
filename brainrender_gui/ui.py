@@ -115,7 +115,7 @@ class UI(QMainWindow):
                 continue
 
             # Get brainregion name
-            name = self.scene.atlas._get_from_structure(node.tag, "name")
+            name = self.scene.atlas._get_from_structure(node.identifier, "name")
 
             # Create Item
             item = StandardItem(
