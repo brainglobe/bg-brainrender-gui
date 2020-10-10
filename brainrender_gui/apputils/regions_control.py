@@ -1,4 +1,3 @@
-from PyQt5.Qt import Qt
 import brainrender
 
 from brainrender_gui.widgets.add_regions import AddRegionsWindow
@@ -79,16 +78,16 @@ class RegionsControl:
 
         # Toggle checkbox
         if not item._checked:
-            item.setCheckState(Qt.Checked)
+            # item.setCheckState(Qt.Checked)
             item._checked = True
         else:
-            item.setCheckState(Qt.Unchecked)
+            # item.setCheckState(Qt.Unchecked)
             item._checked = False
 
         # Add/remove mesh
         if get_region_actors(self.scene.actors, region) is None:
             # Add region
-            self.scene.add_brain_regions(region,)
+            self.scene.add_brain_regions(region.split(" ")[0],)
         else:
             # remove regiona and update list
             act = get_region_actors(self.scene.actors, region)

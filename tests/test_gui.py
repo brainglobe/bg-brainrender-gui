@@ -1,5 +1,5 @@
 from brainrender_gui.app import App
-from PyQt5 import QtCore
+from qtpy import QtCore
 
 
 def test_simple_launch(qtbot):

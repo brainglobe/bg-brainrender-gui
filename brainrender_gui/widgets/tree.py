@@ -1,5 +1,4 @@
-from PyQt5.Qt import QStandardItem, Qt
-from PyQt5.QtGui import QFont, QColor
+from qtpy.QtGui import QFont, QColor, QStandardItem
 
 
 class StandardItem(QStandardItem):
@@ -13,8 +12,9 @@ class StandardItem(QStandardItem):
         self.depth = depth  # depth in the hierarchy structure
         self.tag = tag
 
+        self._checked = False
+
         # Set font color/size
-        self.bold = False
         self.toggle_active()
 
         # Set text
@@ -24,11 +24,10 @@ class StandardItem(QStandardItem):
         self.setText(txt)
 
         # Set checkbox
-        self.setFlags(
-            self.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable
-        )
-        self.setCheckState(Qt.Unchecked)
-        self._checked = False
+        # self.setFlags(
+        #     self.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable
+        # )
+        # self.setCheckState(Qt.Unchecked)
 
     def toggle_active(self):
         """
@@ -37,5 +36,8 @@ class StandardItem(QStandardItem):
             to highlight the fact. 
         """
         fnt = QFont("Roboto", 14)
-        fnt.setBold(self.bold)
+        if self._checked:
+            fnt.setBold(True)
+        else:
+            fnt.setBold(False)
         self.setFont(fnt)

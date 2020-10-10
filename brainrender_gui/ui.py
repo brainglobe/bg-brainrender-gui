@@ -13,7 +13,7 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 from qtpy import QtGui
-from PyQt5.Qt import QStandardItemModel
+from qtpy.QtGui import QStandardItemModel
 
 from pkg_resources import resource_filename
 
@@ -115,7 +115,9 @@ class UI(QMainWindow):
                 continue
 
             # Get brainregion name
-            name = self.scene.atlas._get_from_structure(node.identifier, "name")
+            name = self.scene.atlas._get_from_structure(
+                node.identifier, "name"
+            )
 
             # Create Item
             item = StandardItem(

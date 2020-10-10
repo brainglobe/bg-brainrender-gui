@@ -23,7 +23,7 @@ class App(
 
     def __init__(self, *args, atlas=None, axes=None, **kwargs):
         """
-            Initialise the pyqt5 app and the brainrender scene. 
+            Initialise the qtpy app and the brainrender scene. 
 
             Arguments:
             ----------

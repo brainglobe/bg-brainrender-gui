@@ -1,5 +1,5 @@
 ## bg-brainrender-gui
-`bg-brainrender-gui` is a `pyqt5` based GUI built around [`brainrender`](https://github.com/BrancoLab/BrainRender).
+`bg-brainrender-gui` is a `qtpy` based GUI built around [`brainrender`](https://github.com/BrancoLab/BrainRender).
 
 The goal of this program is to provide an easy to use graphical interface for `brainrender`, enabling the creation of 3d anatomical renderings with minimal coding requirements. 
 

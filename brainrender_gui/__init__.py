@@ -3,8 +3,6 @@ import sys
 from brainrender_gui.app import App
 import click
 
-import pyinspect
-pyinspect.install_traceback()
 
 def launch(*args, output=None, **kwargs):
     """
